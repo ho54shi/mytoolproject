@@ -1,0 +1,16 @@
+.card {
+    margin-bottom: 30px;
+}
+
+.cannot-select{
+    user-select: none;
+}
+
+#target {
+    display: none;
+}
+
+.new-label {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}

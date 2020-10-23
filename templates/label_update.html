@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="{% static 'js/jquery.minicolors.js' %}"></script>
+<link rel='stylesheet' type="text/css" href="{% static 'css/jquery.minicolors.css' %}">
+
+{% endblock header %}
+{% block content %}
+<form action='' method='POST' enctype="multipart/form-data">{% csrf_token %}
+
+    <p>名前：<input type='text' name='name' value={{object.name}} class='form-control'></p>
+    <p>
+        <label class="col-xs-4 control-label">色</label>
+    <div class="col-xs-8">
+        <input type="text" maxlength="7" class="form-control colorpicker" name="color" value={{object.color}}>
+    </div>
+    </p>
+    <p>キーバインド：<select name="keybind" class="form-control">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+        </select></p>
+    <input type='submit' value='作成する' class="btn btn-primary">
+</form>
+<script>
+    $('.colorpicker').each(function () {
+        $(this).minicolors({
+            format: $(this).attr('data-format') || 'hex',
+            theme: 'bootstrap'
+        });
+    });
+</script>
+{% endblock content %}

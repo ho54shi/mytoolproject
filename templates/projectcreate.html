@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static%}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<form action='' method='POST' enctype="multipart/form-data">{% csrf_token %}
+    <p>タイトル：<input type='text' name='title' class='form-control'></p>
+    <p>概要：<input type='text' name='description' class='form-control'></p>
+    <p>ファイル：<input type='file' name='text_file' class='custome-file-input'></p>
+
+    <input type="hidden" name="author" value="{{ user.id }}">
+    <input type='submit' value='作成する' class="btn btn-primary">
+</form>
+
+{% else %}
+ログインしてください
+<a href="{% url 'login' %}" class="btn btn-primary" role="button" aria-pressed="true">ログイン</a>
+{% endif %}
+{% endblock content %}

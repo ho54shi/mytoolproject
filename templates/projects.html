@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+{% endblock header %}
+{% block content %}
+
+{% if all_flag == "true" %}
+<h2>すべてのプロジェクト</h2>
+{% else %}
+<h2>自分のプロジェクト</h2>
+{% endif　%}
+
+{% if  all_flag == "true" %}
+
+<a href="{% url 'projects'  %}?all=false" class="btn btn-primary" role="button" aria-pressed="true">自分のプロジェクト</a>
+{% else %}
+<a href="{% url 'projects'  %}?all=true" class="btn btn-primary" role="button" aria-pressed="true">すべてのプロジェクト</a>
+{% endif %}
+<a href="{% url 'project_create' %}" class="btn btn-primary" role="button" aria-pressed="true">新規作成</a>
+<a href="{% url 'anns'   %}" class="btn btn-primary">提出されたデータ</a>
+<a href="{% url 'logout' %}" class="btn btn-dark" role="button" aria-pressed="true">ログアウト</a>
+
+<div class='container'>
+    {% for item in project_list %}
+    <div class="card">
+        <h5 class="card-header">{{ item.title }}</h5>
+        <div class="card-body">
+            <h5 class="card-title">概要：{{ item.description }}</h5>
+            <a href="{% url 'project_detail'  item.pk %}" class="btn btn-primary">詳細</a>
+            <a href="{% url 'project_delete'  item.pk %}" class="btn btn-danger">削除</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

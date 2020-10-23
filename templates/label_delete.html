@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block header %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <p>ID: {{object.id}}</p>
+            <p>{{ object }} を削除していいですか?</p>
+
+            <form method="post">
+                <button class="btn btn-danger">削除する</button>
+                {% csrf_token %}
+            </form>
+        </div>
+
+        {% endblock content %}
