@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser
+from django.core.paginator import Paginator
 
 
 def indexview(request):
@@ -63,10 +64,18 @@ def projectsview(request):
     #path = request.get_full_path
     all_flag = request.GET.get('all')
     print(all_flag)
+
     if all_flag == "true":
-        project_list = ProjectModel.objects.all()
+        all_project_list = ProjectModel.objects.all()
+        paginator = Paginator(all_project_list, 3)  # 10 :item per a page
+        p = request.GET.get('p')
+        print('p:', p)
+        project_list = paginator.get_page(p)
     else:
-        project_list = ProjectModel.objects.filter(author_id=user_id)
+        my_project_list = ProjectModel.objects.filter(author_id=user_id)
+        paginator = Paginator(my_project_list, 3)  # 10 :item per a page
+        p = request.GET.get('p')
+        project_list = paginator.get_page(p)
     context = {'project_list': project_list,
                'user': request.user, 'all_flag': request.GET.get('all')}
     return render(request, 'projects.html', context)

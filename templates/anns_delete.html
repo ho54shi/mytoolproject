@@ -3,6 +3,8 @@
 
 
 {% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+
 {% endblock header %}
 
 {% block content %}
@@ -15,5 +17,5 @@
                 {% csrf_token %}
             </form>
         </div>
-
+        <a href="{% url 'anns' %}" class="btn btn-dark cancel-delete-project" role="button" aria-pressed="true">戻る</a>
         {% endblock content %}

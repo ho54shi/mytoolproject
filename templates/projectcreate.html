@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static%}
-
+{% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+{% endblock header %}
 {% block content %}
 
 {% if user.is_authenticated %}
@@ -12,9 +14,11 @@
     <input type="hidden" name="author" value="{{ user.id }}">
     <input type='submit' value='作成する' class="btn btn-primary">
 </form>
+<a href="{% url 'projects' %}" class="btn btn-dark back-to-projects" role="button" aria-pressed="true">戻る</a>
 
 {% else %}
 ログインしてください
 <a href="{% url 'login' %}" class="btn btn-primary" role="button" aria-pressed="true">ログイン</a>
+
 {% endif %}
 {% endblock content %}

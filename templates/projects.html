@@ -3,6 +3,7 @@
 
 {% block header %}
 <link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+<link rel='stylesheet' type="text/css" href="{% static 'css/bulma.css' %}">
 {% endblock header %}
 {% block content %}
 
@@ -33,5 +34,42 @@
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div class="paginator">
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        {% if project_list.has_previous %}
+        <a class="pagination-previous" href="?all={{all_flag}}&p={{ project_list.previous_page_number }}">前へ</a>
+        {% endif%}
+        {% if project_list.has_next %}
+        <a class="pagination-next" href="?all={{all_flag}}&p={{ project_list.next_page_number }}">次へ</a>
+        {% endif%}
+        <ul class="pagination-list">
+            {% if project_list.has_previous %}
+            {% if project_list.previous_page_number != 1 %}
+            <li><a class="pagination-link" href="?all={{all_flag}}&?p=1">1</a></li>
+            <li><span class="pagenation-ellipsos">&hellip;</span></li>
+            {% endif %}
+            <li><a class="pagination-link"
+                    href="?all={{all_flag}}&p={{ project_list.previous_page_number }}">{{project_list.previous_page_number }}</a>
+            </li>
+            {% endif%}
+            <span>
+                <li class="pagination-link is-current">{{ project_list.number}}</li>
+            </span>
+            {% if project_list.has_next %}
+            <li><a class="pagination-link"
+                    href="?all={{all_flag}}&p={{ project_list.next_page_number }}">{{ project_list.next_page_number }}</a>
+            </li>
+            {% if project_list.next_page_number !=  project_list.paginator.num_pages %}
+            <li><span class="pagenation-ellipsos">&hellip;</span></li>
+            <li><a class="pagination-link"
+                    href="?all={{all_flag}}&p={{ project_list.next_page_number }}">{{project_list.paginator.num_pages}}</a>
+            </li>
+            {% endif %}
+            {% endif%}
+        </ul>
+
+    </nav>
 </div>
 {% endblock content %}
