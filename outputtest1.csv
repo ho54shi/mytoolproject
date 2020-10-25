@@ -1,0 +1,24 @@
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: line
+   nullvalue: ""
+      output: outputtest1.csv
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: /mnt/c/linux_home/django/mytoolproject/db.sqlite3
+        echo: off
+         eqp: off
+     explain: auto
+     headers: on
+        mode: line
+   nullvalue: ""
+      output: outputtest1.csv
+colseparator: ","
+rowseparator: "\n"
+       stats: off
+       width: 
+    filename: /mnt/c/linux_home/django/mytoolproject/db.sqlite3

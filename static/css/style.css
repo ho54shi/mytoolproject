@@ -6,9 +6,7 @@
     user-select: none;
 }
 
-#target {
-    display: none;
-}
+
 
 .new-label {
     margin-top: 15px;
@@ -21,4 +19,15 @@
 
 .cancel-delete-project{
     margin: 20px 0 0 15px;
+}
+.back-to-projects{
+    margin-top: 20px
+}
+
+span.edit-table{
+    margin-top: 50px;
+    margin-bottom: 50px;  
+    margin-left: 50px; 
+    margin-right: 50px; 
+    display: inline-block;
 }

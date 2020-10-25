@@ -2,12 +2,14 @@
 {% load static %}
 
 {% block header %}
-<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
     crossorigin="anonymous"></script>
 <script src="{% static 'js/labelling.js' %}"></script>
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
+
 {% endblock header %}
 
 {% block content %}
@@ -15,7 +17,7 @@
 {{ errormessage }}
 <nav class="navbar navbar-dark bg-dark">
     <a href="{% url 'project_detail' project_pk %}" class=" navbar-brand">プロジェクト詳細</a>
-    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル</a>
+    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル編集</a>
     <a href="{% url 'projects'  %}" class=" navbar-brand">プロジェクト一覧</a>
 </nav>
 
@@ -33,14 +35,18 @@
 </div>
 
 <div class='container'>
-    <h5 class="text">{% for line in text %}{% if line|length > 1 %}{{ line }}<br>{% endif %}{% endfor %}</h5>
+    {% comment %}
+    komeout
+    <span class="text">{% for line in text %}{% if line|length > 1 %}{{ line }}<br>{% endif %}{% endfor %}</span>
+    {% endcomment %}
+    <span class="text edit-table">{{ text }}</span>
     <form action='' method="post">
         {% csrf_token %}
-        <input type='hidden' class="text" name="text">
+        <input type='hidden' name="text" id="input-text" value="{{text}}" />
         <textarea class="alldata storetext" id="target" name="anns" style="display: none;"></textarea>
-        <input type='hidden' name="annotator" value="{{user.id}}">
+        <input type='hidden' name="annotator" value="{{user.id}}" />
         <input type='submit' class="btn btn-primary data-submit" value='submit'>
     </form>
-    <a href="{% url 'projects' %}" class="btn btn-primary">戻る</a>
+    <a href="javascript:history.back();" class="btn btn-dark back-to-projects">戻る</a>
 </div>
 {% endblock content %}

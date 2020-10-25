@@ -13,24 +13,24 @@
 
 <nav class="navbar navbar-dark bg-dark">
     <a href="{% url 'project_detail' project_pk %}" class=" navbar-brand">プロジェクト詳細</a>
-    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル</a>
+    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル編集</a>
     <a href="{% url 'projects'  %}" class=" navbar-brand">プロジェクト一覧</a>
 </nav>
 <div class='container'>
     <a href="{% url 'label_create' project_pk %}" class="btn btn-primary new-label" role="button"
-        aria-pressed="true">新規作成</a>
+        aria-pressed="true">ラベル新規作成</a>
     {% for item in label_list %}
     <div class="card">
         <h5 class="card-header">ラベル名: {{ item.name }}</h5>
         <div class="card-body">
             <h5 class="card-title">キーバインド：{{ item.keybind }}</h5>
             <h5 class="card-title" style="background-color: {{item.color}};">色：{{ item.color }}</h5>
-            <a href="{% url 'label_update'  project_pk item.id %}" class="btn btn-primary">修正</a>
+            <a href="{% url 'label_update'  project_pk item.id %}" class="btn btn-primary">編集</a>
             <a href="{% url 'label_delete'  project_pk item.id %}" class="btn btn-danger">削除</a>
 
         </div>
     </div>
     {% endfor %}
-    <a href="{% url 'project_detail'  project_pk %}" class="btn btn-primary">プロジェクトに戻る</a>
+    <a href="{% url 'project_detail'  project_pk %}" class="btn btn-secondary">プロジェクトに戻る</a>
 </div>
 {% endblock content %}

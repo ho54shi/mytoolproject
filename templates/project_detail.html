@@ -10,7 +10,7 @@
 {{ errormessage }}
 <nav class="navbar navbar-dark bg-dark">
     <a href="{% url 'project_detail' project_pk %}" class=" navbar-brand">プロジェクト詳細</a>
-    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル</a>
+    <a href="{% url 'label' project_pk %}" class="navbar-brand">ラベル編集</a>
     <a href="{% url 'projects'  %}" class=" navbar-brand">プロジェクト一覧</a>
 </nav>
 <div class='container'>
@@ -24,14 +24,17 @@
             <h5 class="card-title">テキスト：
                 {% for line in text %}
                 {{ line }}
+                <a href="{% url 'submit' object.pk %}?sentence={{forloop.counter0}}" class="btn btn-primary">ラベル付けする</a>
                 <br>
                 {% endfor %}
             </h5>
             <h5>project_pk: {{ project_pk }}</h5>
 
-            <a href="{% url 'projects' %}" class="btn btn-dark">戻る</a>
+            <a href="javascript:history.back();" class="btn btn-dark">戻る</a>
             <a href="{% url 'label' project_pk %}" class="btn btn-primary">ラベル編集</a>
+            {% comment %}
             <a href="{% url 'work' object.pk %}" class="btn btn-primary">ラベル付けする</a>
+            {% endcomment %}
         </div>
     </div>
 </div>

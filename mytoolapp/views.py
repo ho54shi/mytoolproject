@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser
 from django.core.paginator import Paginator
+from rules.contrib.views import PermissionRequiredMixin
 
 
 def indexview(request):
@@ -61,7 +62,7 @@ def loginview(request):
 @login_required
 def projectsview(request):
     user_id = request.user.id
-    #path = request.get_full_path
+    # path = request.get_full_path
     all_flag = request.GET.get('all')
     print(all_flag)
 
@@ -84,12 +85,16 @@ def projectsview(request):
 @login_required
 def projectdetailview(request, pk):
     object = ProjectModel.objects.get(pk=pk)
+    chopped_lines = []
     with open(object.text_file.path) as f:
-        text = f.readlines()
+        for line in f.readlines():
+            if len(line) > 1:
+                chopped_line = line.lstrip()
+                chopped_lines.append(chopped_line)
 
     content = {
         'object': object,
-        'text': text,
+        'text': chopped_lines,
         'project_pk': pk
     }
     return render(request, 'project_detail.html', content)
@@ -131,10 +136,17 @@ def anndetailview(request, pk):
 @login_required
 def labellingview(request, pk):
     project = ProjectModel.objects.get(pk=pk)
+    sentence_id = request.GET.get('sentence')
+    print('sentence={}'.format(sentence_id))
+    # with open(project.text_file.path) as f:
+    #    text = f.readlines()
+    chopped_lines = []
     with open(project.text_file.path) as f:
-        text = f.readlines()
+        for line in f.readlines():
+            print("line={}".format(line))
+            chopped_lines.append(line)
     label_list = LabelModel.objects.filter(projects_id=project.id)
-    context = {'project': project, 'text': text,
+    context = {'project': project, 'text': chopped_lines,
                'label_list': label_list, 'project_pk': pk, 'pk': pk}
 
     return render(request, 'labelling.html', context)
@@ -147,11 +159,12 @@ class ProjectCreateClass(CreateView):
     success_url = reverse_lazy('projects')
 
 
-class ProjectDeleteClass(DeleteView):
+class ProjectDeleteClass(PermissionRequiredMixin, DeleteView):
     template_name = 'project_delete.html'
     model = ProjectModel
     fields = ('title', 'description', 'author', 'text_file')
     success_url = reverse_lazy('projects')
+    permission_required = 'mytoolapp.can_delete_project'
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
@@ -162,7 +175,7 @@ class LabelCreateClass(CreateView):
     template_name = 'label_create.html'
     model = LabelModel
     fields = ('name', 'keybind', 'color')
-    #success_url = reverse_lazy('label')
+    # success_url = reverse_lazy('label')
 
     def get_success_url(self):
         return reverse_lazy('label', kwargs={"pk": self.kwargs["pk"]})
@@ -190,6 +203,11 @@ class LabelDeleteClass(DeleteView):
     template_name = 'label_delete.html'
     model = LabelModel
     fields = ('name', 'keybind', 'color', 'project')
+    """
+    def get_from_kwargs(self):
+        kwargs = {"label_pk": self.kwargs["label_pk"]}
+        return kwargs
+    """
 
     def get_success_url(self):
         return reverse_lazy('label', kwargs={"pk": self.kwargs["pk"]})
@@ -213,11 +231,24 @@ class AnnotationCreateClass(CreateView):
         tmp_pk = self.kwargs['pk']
         context['pk'] = self.kwargs['pk']
         project = ProjectModel.objects.get(pk=tmp_pk)
+        sentence_id_str = self.request.GET.get('sentence')
+        sentence_id = int(sentence_id_str)
+
+        chopped_lines = []
+        t_lines = []
         with open(project.text_file.path) as f:
-            text = f.readlines()
+            for line in f.readlines():
+                t_lines.append(line)
+                if len(line) > 1:
+                    chopped_line = line.lstrip()
+                    chopped_lines.append(chopped_line)
         label_list = LabelModel.objects.filter(projects_id=project.id)
         context['project'] = project
-        context['text'] = text
+        context['text'] = chopped_lines[sentence_id]
+        #context['text'] = t_lines
+        print(chopped_lines[sentence_id])
+
+        #context['text'] = text
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load rules %}
 
 {% block header %}
 <link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
@@ -8,9 +9,9 @@
 {% block content %}
 
 {% if all_flag == "true" %}
-<h2>すべてのプロジェクト</h2>
+<h4 class="display-4">すべてのプロジェクト</h4>
 {% else %}
-<h2>自分のプロジェクト</h2>
+<h4 class="display-4">自分のプロジェクト</h4>
 {% endif　%}
 
 {% if  all_flag == "true" %}
@@ -22,7 +23,7 @@
 <a href="{% url 'project_create' %}" class="btn btn-primary" role="button" aria-pressed="true">新規作成</a>
 <a href="{% url 'anns'   %}" class="btn btn-primary">提出されたデータ</a>
 <a href="{% url 'logout' %}" class="btn btn-dark" role="button" aria-pressed="true">ログアウト</a>
-
+<span>ログインしているユーザー: {{user}}</span>
 <div class='container'>
     {% for item in project_list %}
     <div class="card">
@@ -30,7 +31,9 @@
         <div class="card-body">
             <h5 class="card-title">概要：{{ item.description }}</h5>
             <a href="{% url 'project_detail'  item.pk %}" class="btn btn-primary">詳細</a>
-            <a href="{% url 'project_delete'  item.pk %}" class="btn btn-danger">削除</a>
+            {% has_perm 'mytoolapp.can_delete_project' user item as rules_delete_item %}
+            <a href="{% url 'project_delete'  item.pk %}"
+                class="btn btn-danger {{ rules_delete_item|yesno:',disabled'}}">削除</a>
         </div>
     </div>
     {% endfor %}
@@ -64,7 +67,7 @@
             {% if project_list.next_page_number !=  project_list.paginator.num_pages %}
             <li><span class="pagenation-ellipsos">&hellip;</span></li>
             <li><a class="pagination-link"
-                    href="?all={{all_flag}}&p={{ project_list.next_page_number }}">{{project_list.paginator.num_pages}}</a>
+                    href="?all={{all_flag}}&p={{ project_list.paginator.num_pages }}">{{project_list.paginator.num_pages}}</a>
             </li>
             {% endif %}
             {% endif%}

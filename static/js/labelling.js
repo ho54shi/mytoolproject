@@ -12,10 +12,13 @@ $(function () {
         var range = selection.getRangeAt(0);
         var prerange = range.cloneRange();
 
-        var sentence = document.getElementsByClassName("text").item(0);
+
+        var sentence = document.getElementsByClassName("edit-table").item(0);
         prerange.setStart(sentence, 0);
         //prerange.selectNodeContents(selection.anchorNode);
-
+        console.log(selection)
+        console.log(range)
+        console.log("range: ", range.startContainer)
         prerange.setEnd(range.startContainer, range.startOffset);
         start = prerange.toString().length;
         end = start + range.toString().length;
@@ -141,7 +144,8 @@ $(function () {
                 str_all_data += str_data
             }
             document.getElementById('target').value = str_all_data;
-            console.log('str_all: ', str_all_data)
+
+            console.log('str_all: ', str_all_data);
 
         } else {
             return false; //POST is stopped.
@@ -184,6 +188,4 @@ $(function () {
 
 
     }
-    tmp_text = $("h5.text").text();
-    $("input.text").val(tmp_text);
 })

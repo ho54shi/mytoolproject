@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import ProjectModel, LabelModel, AnnotationModel
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomeUser
+from guardian.admin import GuardedModelAdmin
 # Register your models here.
 
 
@@ -11,8 +12,12 @@ class CustomeUserAdmin(UserAdmin):
     list_display = ['username', 'email', 'expert']
 
 
+class ProjectAdmin(GuardedModelAdmin):
+    pass
+
+
 admin.site.register(CustomeUser, CustomeUserAdmin)
 
-admin.site.register(ProjectModel)
+admin.site.register(ProjectModel, ProjectAdmin)
 admin.site.register(LabelModel)
 admin.site.register(AnnotationModel)

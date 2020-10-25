@@ -3,6 +3,7 @@
 
 
 {% block header %}
+<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
 {% endblock header %}
 
 {% block content %}
@@ -17,5 +18,9 @@
                 {% csrf_token %}
             </form>
         </div>
+    </div>
+    <a class="btn btn-dark cancel-delete-project" href="javascript:history.back();">戻る</a>
+</div>
 
-        {% endblock content %}
+
+{% endblock content %}

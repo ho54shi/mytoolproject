@@ -5,7 +5,7 @@
 <link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
 {% endblock header %}
 {% block content %}
-<h2>提出したデータ</h2>
+<h2>提出されたデータ</h2>
 
 <a href="{% url 'projects' %}" class="btn btn-primary" role="button" aria-pressed="true">プロジェクト</a>
 <a href="{% url 'logout' %}" class="btn btn-dark" role="button" aria-pressed="true">ログアウト</a>
@@ -15,7 +15,8 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">text：{{ item.text|truncatechars:20 }}</h5>
-            <h5 class="card-title">anns：{{ item.anns| linebreaksbr| truncatewords:1 }}</h5>
+            <h5 class="card-title">anns：(index, word, start, end, label)<br>
+                {{ item.anns| linebreaksbr| truncatewords:1 }}</h5>
             <a href="{% url 'ann_detail'  item.pk %}" class="btn btn-primary">詳細</a>
             <a href="{% url 'ann_delete'  item.pk %}" class="btn btn-danger">削除</a>
         </div>
