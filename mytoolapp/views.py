@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from rules.contrib.views import PermissionRequiredMixin
 
 
+@login_required
 def indexview(request):
     return render(request, 'index.html', {})
 
