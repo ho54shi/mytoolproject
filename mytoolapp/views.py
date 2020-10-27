@@ -56,7 +56,7 @@ def loginview(request):
             return redirect('projects')
         else:
             print('login failure')
-            return redirect('accounts/login')
+            return redirect('login')
     return render(request, 'login.html')
 
 
