@@ -1,33 +1,52 @@
 .card {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
-.cannot-select{
-    user-select: none;
+.cannot-select {
+  user-select: none;
 }
-
-
 
 .new-label {
-    margin-top: 15px;
-    margin-bottom: 15px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
-.back-to-projects{
-    margin: 20px 0 0 0;
+.back-to-projects {
+  margin: 20px 0 0 0;
 }
 
-.cancel-delete-project{
-    margin: 20px 0 0 15px;
+.cancel-delete-project {
+  margin: 20px 0 0 15px;
 }
-.back-to-projects{
-    margin-top: 20px
+.back-to-projects {
+  margin-top: 20px;
 }
 
-span.edit-table{
-    margin-top: 50px;
-    margin-bottom: 50px;  
-    margin-left: 50px; 
-    margin-right: 50px; 
-    display: inline-block;
+
+
+.border-line{
+  margin-top: 50px;
+  margin-bottom: 50px;
+  margin-left: 50px;
+  margin-right: 50px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: inline-block;
+  border: 1px solid #333333;
+}
+
+div.label {
+  float: left;
+}
+
+table.margin-test{
+  border-collapse: separate;
+  border-spacing: 0px 20px;
+}
+
+.text-row-and-label{
+  
+  
 }

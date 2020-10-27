@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser
 from django.core.paginator import Paginator
 from rules.contrib.views import PermissionRequiredMixin
-
+from config.settings import BASE_DIR
 
 @login_required
 def indexview(request):
@@ -56,7 +56,7 @@ def loginview(request):
             return redirect('projects')
         else:
             print('login failure')
-            return redirect('login')
+            return redirect('accounts/login')
     return render(request, 'login.html')
 
 
@@ -158,7 +158,33 @@ class ProjectCreateClass(CreateView):
     model = ProjectModel
     fields = ('title', 'description', 'author', 'text_file')
     success_url = reverse_lazy('projects')
+"""
+    def form_valid(self, form):
+        text_file = self.request.FILES['text_file']
+        print("text_file")
+        print(text_file)
+        print(type(text_file))
+        with open(text_file) as f:
+            lines = f.readlines()
+        print(lines)
+        return super().form_valid(form)
+"""
 
+class ProjectUpdateClass(UpdateView):
+    template_name = 'project_update.html'
+    model = ProjectModel
+    fields = ('title', 'description', 'text_file')
+    #success_url = reverse_lazy('project_detail')
+    def get_object(self):
+        project_data = ProjectModel.objects.get(pk=self.kwargs['pk'])
+        text_url = BASE_DIR + project_data.text_file.url
+        with open(text_url) as f:
+            lines = f.readline()
+        print(lines)
+        return project_data
+    def get_success_url(self):
+        return reverse_lazy('project_detail', kwargs={"pk": self.kwargs["pk"]})
+    
 
 class ProjectDeleteClass(PermissionRequiredMixin, DeleteView):
     template_name = 'project_delete.html'

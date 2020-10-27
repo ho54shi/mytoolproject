@@ -39,7 +39,7 @@
     komeout
     <span class="text">{% for line in text %}{% if line|length > 1 %}{{ line }}<br>{% endif %}{% endfor %}</span>
     {% endcomment %}
-    <span class="text edit-table">{{ text }}</span>
+    <div class='border-line'><span class="text edit-table">{{ text }}</span></div>
     <form action='' method="post">
         {% csrf_token %}
         <input type='hidden' name="text" id="input-text" value="{{text}}" />

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import signupview, loginview, projectsview, projectdetailview, ProjectCreateClass, labelview, indexview
 from .views import labellingview, LabelCreateClass, logoutview, AnnotationCreateClass
 from .views import annsview, anndetailview, ProjectDeleteClass, LabelDeleteClass, LabelUpdateClass
-from .views import AnnotationDeleteClass
+from .views import AnnotationDeleteClass,ProjectUpdateClass
 urlpatterns = [
     path('', indexview, name='index'),
     path('signup/', signupview, name='signup'),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('projects/', projectsview, name='projects'),
     path('projects/<int:pk>/', projectdetailview, name='project_detail'),
     path('projects/create/', ProjectCreateClass.as_view(), name='project_create'),
+    path('projects/<int:pk>/update', ProjectUpdateClass.as_view(), name='project_update'),
     path('projects/<int:pk>/delete/',
          ProjectDeleteClass.as_view(), name='project_delete'),
 

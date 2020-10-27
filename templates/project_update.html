@@ -1,0 +1,44 @@
+{% extends 'base.html' %} {% load static%} {% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+{% endblock header %} {% block content %} {% if user.is_authenticated %}
+<form action="" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <p>
+    タイトル：<input
+      type="text"
+      name="title"
+      class="form-control"
+      value="{{object.title}}"
+    />
+  </p>
+  <p>
+    概要：<input
+      type="text"
+      name="description"
+      class="form-control"
+      value="{{object.description}}"
+    />
+  </p>
+
+
+  <input type="hidden" name="author" value="{{ user.id }}" />
+  <input type="submit" value="修正する" class="btn btn-primary" />
+</form>
+<a
+  href="{% url 'project_detail'  object.id%}"
+  class="btn btn-dark back-to-projects"
+  role="button"
+  aria-pressed="true"
+  >戻る</a
+>
+
+{% else %} ログインしてください
+<a
+  href="{% url 'login' %}"
+  class="btn btn-primary"
+  role="button"
+  aria-pressed="true"
+  >ログイン</a
+>
+
+{% endif %} {% endblock content %}

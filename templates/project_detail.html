@@ -20,21 +20,28 @@
 
             <h5 class="card-title">概要：{{ object.description }}</h5>
             <h5 class="card-title">投稿者：{{ object.author }}</h5>
-            <h5 class="card-title">テキストURL：{{ object.text_file.url }}</h5>
-            <h5 class="card-title">テキスト：
-                {% for line in text %}
-                {{ line }}
-                <a href="{% url 'submit' object.pk %}?sentence={{forloop.counter0}}" class="btn btn-primary">ラベル付けする</a>
-                <br>
-                {% endfor %}
-            </h5>
-            <h5>project_pk: {{ project_pk }}</h5>
-
-            <a href="javascript:history.back();" class="btn btn-dark">戻る</a>
-            <a href="{% url 'label' project_pk %}" class="btn btn-primary">ラベル編集</a>
             {% comment %}
-            <a href="{% url 'work' object.pk %}" class="btn btn-primary">ラベル付けする</a>
+            <h5 class="card-title">テキストURL：{{ object.text_file.url }}</h5>
             {% endcomment %}
+            <table class="margin-test">
+            <tbody>
+            <h5 class="card-title">テキスト：
+                
+                {% for line in text %}
+                <tr >
+                <td class="text-row-and-label">{{ line }}</td>
+                <td class="text-row-and-label" width="200px"><a href="{% url 'submit' object.pk %}?sentence={{forloop.counter0}}" class="btn btn-primary">ラベル付けする</a></td>
+                </tr>
+                {% endfor %}
+           
+            </h5>
+            </tbody>
+            </table>
+            <h5>project_pk: {{ project_pk }}</h5>
+            <a href="{% url 'projects' %}" class="btn btn-secondary">戻る</a>
+            <a href="{% url 'project_update' project_pk %}" class="btn btn-primary">プロジェクト編集</a>
+            <a href="{% url 'label' project_pk %}" class="btn btn-primary">ラベル編集</a>
+
         </div>
     </div>
 </div>
