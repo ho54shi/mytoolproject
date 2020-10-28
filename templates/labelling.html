@@ -24,22 +24,42 @@
 <div class='container'>
     <h3 class="cannot-select">{{ project.title }}</h3>
     {% for item in label_list %}
+ 
     <div class="label">
         {% with color=item.color %}
 
         <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}</button>
-        <span class="keybind">{{item.keybind}}</span>
+        <span class="keybind"><u>{{item.keybind}}</u></span>
         {% endwith %}
     </div>
     {% endfor%}
+
 </div>
 
+    
+<fieldset class="fieldset-1">
+    <legend id="fieldset-1-legend">このラベルかどうか悩みましたか？
+    </legend>
+    <div class="radio-and-label">
+    <div class="form-check radio-inline">
+    <label for="radio-1" class="form-check-label">
+        <input type="radio" class="form-check-input" name="group1" id="radio-1" checked />
+        いいえ</label>
+    </div>
+    <div class="form-check raido-inline">
+    <label for="radio-2" class="form-check-label">
+        <input type="radio" class="form-check-input" name="group1" id="radio-2" />
+        はい</label>
+    </div>
+</fieldset>
+    </div>
+</div>
 <div class='container'>
     {% comment %}
     komeout
     <span class="text">{% for line in text %}{% if line|length > 1 %}{{ line }}<br>{% endif %}{% endfor %}</span>
     {% endcomment %}
-    <div class='border-line'><span class="text edit-table">{{ text }}</span></div>
+    <div class='border-line'><span class="text edit-table" id="selectable-text">{{ text }}</span></div>
     <form action='' method="post">
         {% csrf_token %}
         <input type='hidden' name="text" id="input-text" value="{{text}}" />
