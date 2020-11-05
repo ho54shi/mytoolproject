@@ -22,9 +22,7 @@
   margin-top: 20px;
 }
 
-
-
-.border-line{
+.border-line {
   margin-top: 50px;
   margin-bottom: 50px;
   margin-left: 50px;
@@ -41,12 +39,33 @@ div.label {
   float: left;
 }
 
-table.margin-test{
+table.margin-test {
   border-collapse: separate;
   border-spacing: 0px 20px;
 }
 
-.text-row-and-label{
-  
-  
+.text-row-and-label {
+}
+#fieldset-1-legend {
+  font-size: 1rem;
+}
+
+.radio-and-label {
+  margin-right: 20px;
+}
+.fieldset-1 {
+  padding-left: 50px;
+}
+
+.shortcut-key {
+  font-size: 90%;
+  font-family: monospace;
+  background: #eee;
+  border-radius: 2px;
+  padding: 2px;
+  border: 1px solid #aaa;
+}
+
+.label{
+  margin-left: 10px;
 }

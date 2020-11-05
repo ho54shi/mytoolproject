@@ -28,8 +28,8 @@
     <div class="label">
         {% with color=item.color %}
 
-        <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}</button>
-        <span class="keybind"><u>{{item.keybind}}</u></span>
+        <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}<span class="keybind shortcut-key">({{item.keybind}})</span></button>
+        
         {% endwith %}
     </div>
     {% endfor%}
@@ -44,12 +44,12 @@
     <div class="form-check radio-inline">
     <label for="radio-1" class="form-check-label">
         <input type="radio" class="form-check-input" name="group1" id="radio-1" checked />
-        いいえ</label>
+        自信がある</label>
     </div>
     <div class="form-check raido-inline">
     <label for="radio-2" class="form-check-label">
         <input type="radio" class="form-check-input" name="group1" id="radio-2" />
-        はい</label>
+        自信がない</label>
     </div>
 </fieldset>
     </div>
