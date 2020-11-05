@@ -10,6 +10,11 @@ from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser
 from django.core.paginator import Paginator
 from rules.contrib.views import PermissionRequiredMixin
 from config.settings import BASE_DIR
+import MeCab
+import subprocess
+import os
+from mytoolapp.my_scripts import n3er_parse
+
 
 @login_required
 def indexview(request):
@@ -158,6 +163,8 @@ class ProjectCreateClass(CreateView):
     model = ProjectModel
     fields = ('title', 'description', 'author', 'text_file')
     success_url = reverse_lazy('projects')
+
+
 """
     def form_valid(self, form):
         text_file = self.request.FILES['text_file']
@@ -170,11 +177,13 @@ class ProjectCreateClass(CreateView):
         return super().form_valid(form)
 """
 
+
 class ProjectUpdateClass(UpdateView):
     template_name = 'project_update.html'
     model = ProjectModel
     fields = ('title', 'description', 'text_file')
     #success_url = reverse_lazy('project_detail')
+
     def get_object(self):
         project_data = ProjectModel.objects.get(pk=self.kwargs['pk'])
         text_url = BASE_DIR + project_data.text_file.url
@@ -182,9 +191,10 @@ class ProjectUpdateClass(UpdateView):
             lines = f.readline()
         print(lines)
         return project_data
+
     def get_success_url(self):
         return reverse_lazy('project_detail', kwargs={"pk": self.kwargs["pk"]})
-    
+
 
 class ProjectDeleteClass(PermissionRequiredMixin, DeleteView):
     template_name = 'project_delete.html'
@@ -269,13 +279,31 @@ class AnnotationCreateClass(CreateView):
                 if len(line) > 1:
                     chopped_line = line.lstrip()
                     chopped_lines.append(chopped_line)
+        tagger = MeCab.Tagger("-Owakati")
+        words = tagger.parse(chopped_lines[sentence_id]).split()
+        splitted_line = " ".join(words)
+        temp_file_path = "./NER/data/splitted_text.txt"
+        with open(temp_file_path, mode="w") as f:
+            f.write(splitted_line)
+
+        script_path = os.path.dirname(os.path.abspath(__file__))
+        #print('script_path:: {}'.format(script_path))
+        project_path = '/'.join(script_path.split('/')[0:-1])
+        #print('project_path:: {}'.format(project_path))
+        bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
+        #print("bash_path:: {}".format(bash_path))
+        subprocess.run(['bash', bash_path])
+        n3ered_text_path = os.path.join(project_path, 'NER/results/temp.iob2')
+        with open(n3ered_text_path) as f:
+            n3ered_line = f.read()
+
+        indices, words_list, refs_list = n3er_parse.parse(
+            n3ered_line)  # 関数テスト用
+        print(indices, words_list, refs_list)
         label_list = LabelModel.objects.filter(projects_id=project.id)
         context['project'] = project
-        context['text'] = chopped_lines[sentence_id]
-        #context['text'] = t_lines
-        print(chopped_lines[sentence_id])
-
-        #context['text'] = text
+        #context['text'] = splitted_line
+        context['text'] = n3ered_line
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 
