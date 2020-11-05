@@ -300,10 +300,11 @@ class AnnotationCreateClass(CreateView):
         indices, words_list, refs_list = n3er_parse.parse(
             n3ered_line)  # 関数テスト用
         print(indices, words_list, refs_list)
+        display_text = n3er_parse.display_text(n3ered_line)
         label_list = LabelModel.objects.filter(projects_id=project.id)
         context['project'] = project
-        #context['text'] = splitted_line
-        context['text'] = n3ered_line
+        #context['text'] = n3ered_line
+        context['text'] = display_text
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 
