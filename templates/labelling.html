@@ -28,7 +28,8 @@
     <div class="label">
         {% with color=item.color %}
 
-        <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}<span class="keybind shortcut-key">({{item.keybind}})</span></button>
+        <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}</button>
+        <span class="keybind shortcut-key">({{item.keybind}})</span>
         
         {% endwith %}
     </div>
@@ -69,4 +70,11 @@
     </form>
     <a href="javascript:history.back();" class="btn btn-dark back-to-projects">戻る</a>
 </div>
+
+<script>
+    var json_data = JSON.parse("{{json_data|escapejs}}");
+    console.log(json_data);
+</script>
 {% endblock content %}
+
+

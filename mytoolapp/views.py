@@ -14,6 +14,7 @@ import MeCab
 import subprocess
 import os
 from mytoolapp.my_scripts import n3er_parse
+from json import dumps
 
 
 @login_required
@@ -307,6 +308,14 @@ class AnnotationCreateClass(CreateView):
         context['text'] = display_text
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
+
+        refs_json = {}
+        for ref in refs_list:
+            refs_json[ref] = ref
+        dataJSON = dumps(refs_json)
+        print('dataJSON')
+        print(dataJSON)
+        context['json_data'] = dataJSON
 
         return context
 
