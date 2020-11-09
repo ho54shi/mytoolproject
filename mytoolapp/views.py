@@ -315,8 +315,14 @@ class AnnotationCreateClass(CreateView):
         dataJSON = dumps(refs_json)
         print('dataJSON')
         print(dataJSON)
-        context['json_data'] = dataJSON
+        send_data = {}
+        for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
+            send_data[key] = [index, word, ref]
+        sendJSON = dumps(send_data)
 
+        context['json_data'] = dataJSON
+        context['send_data'] = sendJSON
+        print(send_data)
         return context
 
     def get_success_url(self):

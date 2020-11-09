@@ -1,7 +1,9 @@
 var allLabelData = []
 var index = 0;
 var labelData = []
+
 $(function () {
+
 
     $("button.btn").on("click", getSelectedRange);
     $("button.btn").on("click", getButtonName);
@@ -11,13 +13,15 @@ $(function () {
         var selection = window.getSelection();
         var range = selection.getRangeAt(0);
         var prerange = range.cloneRange();
+        var parents = $(range).parents("div.border-line");
+        var search = $(range).parents("div.border-line").find('#selectable-text');
+        var correct = $("#selectable-text")
+
 
 
         var sentence = document.getElementsByClassName("edit-table").item(0);
         prerange.setStart(sentence, 0);
         //prerange.selectNodeContents(selection.anchorNode);
-        console.log(selection)
-        console.log(range)
         console.log("range: ", range.startContainer)
         prerange.setEnd(range.startContainer, range.startOffset);
         start = prerange.toString().length;

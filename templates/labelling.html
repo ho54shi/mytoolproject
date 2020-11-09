@@ -72,8 +72,54 @@
 </div>
 
 <script>
-    var json_data = JSON.parse("{{json_data|escapejs}}");
-    console.log(json_data);
+    var send_data = JSON.parse("{{send_data|escapejs}}");
+    var text = $("span.text").text();
+  
+    var splitted = text.split('　');
+  
+
+    var cnt = 0;
+    var label_cnt = 0;
+    var whole = document.getElementById('selectable-text');
+    whole.innerHTML = "";
+    for(let w of splitted){
+        var flag = 0;
+        var label;
+        var word;
+        for(let key in send_data){
+            if(cnt == send_data[key][0]){
+                flag = 1
+                word = send_data[key][1];
+                label = send_data[key][2];
+            }    
+        }
+        if(flag){
+            var span = document.createElement("span");
+            let labelName = label
+            span.setAttribute("class", labelName);
+            span.textContent = word
+            var delete_button =
+                '<button class="delete btn btn-dark btn-sm" data-id=' +
+                label_cnt +
+                ">" +
+                '<i class="fa fa-close">' +
+                "</button>";
+            label_cnt++;
+            //span.appendChild(delete_button);
+            span.insertAdjacentHTML('beforeend', delete_button)
+            whole.insertAdjacentElement('beforeend', span);
+            whole.insertAdjacentHTML('beforeend', "　");
+        }
+        else{
+            whole.insertAdjacentHTML('beforeend', w);
+            whole.insertAdjacentHTML('beforeend', "　");
+        }
+        cnt++;
+    }
+    
+ 
+   
+
 </script>
 {% endblock content %}
 
