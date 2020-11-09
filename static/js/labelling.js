@@ -1,10 +1,15 @@
 var allLabelData = []
-var index = 0;
+var index = -1;
 var labelData = []
 
 $(function () {
 
-
+    for (let i = 0; i < outer_data.length; i++) {
+        allLabelData.push(outer_data[i]);
+    }
+    console.log(allLabelData);
+    let last_idx = outer_data[outer_data.length - 1][0];
+    index = last_idx + 1;
     $("button.btn").on("click", getSelectedRange);
     $("button.btn").on("click", getButtonName);
     $("button.label-button").on("click", storeData);
@@ -22,7 +27,6 @@ $(function () {
         var sentence = document.getElementsByClassName("edit-table").item(0);
         prerange.setStart(sentence, 0);
         //prerange.selectNodeContents(selection.anchorNode);
-        console.log("range: ", range.startContainer)
         prerange.setEnd(range.startContainer, range.startOffset);
         start = prerange.toString().length;
         end = start + range.toString().length;
