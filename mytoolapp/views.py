@@ -13,7 +13,7 @@ from config.settings import BASE_DIR
 import MeCab
 import subprocess
 import os
-from mytoolapp.my_scripts import n3er_parse
+from mytoolapp.my_scripts import n3er_parse, ann2iob
 from json import dumps
 
 
@@ -136,8 +136,14 @@ def annsview(request):
 
 @login_required
 def anndetailview(request, pk):
-    ann = AnnotationModel.objects.get(pk=pk)
-    return render(request, 'ann_detail.html', {'data': ann})
+    data = AnnotationModel.objects.get(pk=pk)
+    text = data.text
+    anns = data.anns
+    #script_path = os.path.dirname(os.path.abspath(__file__))
+    #project_path = '/'.join(script_path.split('/')[0:-1])
+    #ann_detail_path = os.path.join(project_path, 'NER/results/ann_detail.iob2')
+    IOB = ann2iob.ann_detail(text, anns)
+    return render(request, 'ann_detail.html', {'data': data, 'IOB': IOB})
 
 
 @login_required
@@ -309,20 +315,43 @@ class AnnotationCreateClass(CreateView):
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 
+        context['test_list'] = ['a', 'b', 'c']
+
         refs_json = {}
         for ref in refs_list:
             refs_json[ref] = ref
         dataJSON = dumps(refs_json)
+        """
         print('dataJSON')
         print(dataJSON)
+        """
         send_data = {}
         for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
             send_data[key] = [index, word, ref]
+        send_data['text'] = words_list
         sendJSON = dumps(send_data)
+        ann_data = AnnotationModel.objects.all()
+
+        anns_path = os.path.join(project_path, 'NER/data/anns/anns.txt')
+        text_path = os.path.join(project_path, 'NER/data/anns/text.txt')
+        save_path = os.path.join(project_path, 'NER/data/anns/iob.txt')
+
+        with open(anns_path, mode="w") as f:
+            for data in ann_data:
+                f.write(data.anns + "\n")
+        with open(text_path, mode="w") as f:
+            for data in ann_data:
+                f.write(data.text + "\n")
+
+        with open(anns_path) as f:
+            anns_lines = f.readlines()
+        with open(text_path) as f:
+            text_lines = f.readlines()
+        ann2iob.func(text_lines, anns_lines, save_path)
 
         context['json_data'] = dataJSON
         context['send_data'] = sendJSON
-        print(send_data)
+        # print(send_data)
         return context
 
     def get_success_url(self):

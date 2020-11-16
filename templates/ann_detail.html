@@ -1,44 +1,23 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+{% endblock header %} {% block content %} {{ errormessage }}
+<nav class="navbar navbar-dark bg-dark"></nav>
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">テキスト： {{data.text | linebreaksbr }}</h5>
+      <h5 class="card-title">
+        IOB:
+        {{ IOB|linebreaksbr}}
+      </h5>
+      <h5 class="card-title">プロジェクト： {{data.projects}}</h5>
+      <h5 class="card-title">アノテーター： {{data.annotator}}</h5>
+      <h5 class="card-title">
+        専門家： {% if data.annotator.expert == True%} はい {% else %} いいえ {% endif %}
+      </h5>
 
-{% block header %}
-<link rel='stylesheet' type="text/css" href="{% static 'css/style.css' %}">
-{% endblock header %}
-
-{% block content %}
-
-{{ errormessage }}
-<nav class="navbar navbar-dark bg-dark">
-
-</nav>
-<div class='container'>
-    <div class="card">
-        <div class="card-body">
-
-            <h5 class="card-title">テキスト：
-                {{data.text | linebreaksbr }}
-            </h5>
-            <h5 class="card-title">ラベルデータ(id, word, start, end, label_name)<br>
-                {{data.anns | linebreaksbr }}
-            </h5>
-            <h5 class="card-title">プロジェクト：
-                {{data.projects}}
-            </h5>
-            <h5 class="card-title">アノテーター：
-                {{data.annotator}}
-            </h5>
-            <h5 class="card-title">専門性：
-                {% if data.annotator.expert == True%}
-                有
-                {% else %}
-                無
-                {% endif %}
-            </h5>
-
-
-            <a href="{% url 'anns' %}" class="btn btn-dark">戻る</a>
-
-        </div>
+      <a href="{% url 'anns' %}" class="btn btn-dark">戻る</a>
     </div>
+  </div>
 </div>
 {% endblock content %}
