@@ -2,7 +2,8 @@ from django.urls import path
 from .views import signupview, loginview, projectsview, projectdetailview, ProjectCreateClass, labelview, indexview
 from .views import labellingview, LabelCreateClass, logoutview, AnnotationCreateClass
 from .views import annsview, anndetailview, ProjectDeleteClass, LabelDeleteClass, LabelUpdateClass
-from .views import AnnotationDeleteClass,ProjectUpdateClass
+from .views import AnnotationDeleteClass, ProjectUpdateClass
+from .views import trainview, train_done_view
 urlpatterns = [
     path('', indexview, name='index'),
     path('signup/', signupview, name='signup'),
@@ -10,7 +11,8 @@ urlpatterns = [
     path('projects/', projectsview, name='projects'),
     path('projects/<int:pk>/', projectdetailview, name='project_detail'),
     path('projects/create/', ProjectCreateClass.as_view(), name='project_create'),
-    path('projects/<int:pk>/update', ProjectUpdateClass.as_view(), name='project_update'),
+    path('projects/<int:pk>/update',
+         ProjectUpdateClass.as_view(), name='project_update'),
     path('projects/<int:pk>/delete/',
          ProjectDeleteClass.as_view(), name='project_delete'),
 
@@ -28,6 +30,8 @@ urlpatterns = [
     path('anns/', annsview, name='anns'),
     path('anns/<int:pk>', anndetailview, name='ann_detail'),
     path('anns/<int:pk>/delete', AnnotationDeleteClass.as_view(), name='ann_delete'),
+    path('train/', trainview, name='train'),
+    path('train/done/', train_done_view, name='train_done'),
     path('logout/', logoutview, name='logout'),
 
 ]

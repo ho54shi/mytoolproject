@@ -22,6 +22,7 @@
 {% endif %}
 <a href="{% url 'project_create' %}" class="btn btn-primary" role="button" aria-pressed="true">新規作成</a>
 <a href="{% url 'anns'   %}" class="btn btn-primary">提出されたデータ</a>
+<a href="{% url 'train'   %}" class="btn btn-primary">学習ページへ</a>
 <a href="{% url 'logout' %}" class="btn btn-dark" role="button" aria-pressed="true">ログアウト</a>
 <span>ログインしているユーザー: {{user}}</span>
 <div class='container'>

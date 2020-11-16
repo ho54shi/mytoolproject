@@ -37,9 +37,6 @@ def new_parse(n3ered_text):
     temp_refs_list = []
     line = [c.split('/') for c in n3ered_text.rstrip().split(' ')]
 
-    print("line::")
-    print(line)
-
     temp_words_list += [c[0] for c in line]
     temp_refs_list += [c[1] for c in line]
 
@@ -51,8 +48,8 @@ def new_parse(n3ered_text):
     for id, (word, ref) in enumerate(zip(temp_words_list, temp_refs_list)):
         if ref != 'O':
 
-            cur_label = ref.split('-')[0]  # B or I
-            BorI = ref.split('-')[1]
+            cur_label = ref.split('-')[0]
+            BorI = ref.split('-')[1]  # B or I
             if(BorI == 'B'):
                 if(len(prev_words) < 1):  # i.g.) O B
                     prev_label = cur_label
@@ -75,14 +72,16 @@ def new_parse(n3ered_text):
                     prev_words += [word]
                     prev_label = cur_label
 
-        elif(len(prev_words) > 0):
+        elif(len(prev_words) > 0):  # B O
 
-            words_list += ["　".join(prev_words)]
-            refs_list += [prev_label]
+            words_list += ["　".join(prev_words)]  # B
+            words_list += [word]  # O
+            refs_list += [prev_label]  # B
+            refs_list += [ref]  # O
             indices += [id]
             prev_words = []
         elif(ref == 'O'):
             words_list += [word]
-            refs_list += ['0']
+            refs_list += ['O']
 
     return words_list, refs_list

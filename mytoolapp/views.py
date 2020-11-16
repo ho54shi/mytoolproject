@@ -139,9 +139,9 @@ def anndetailview(request, pk):
     data = AnnotationModel.objects.get(pk=pk)
     text = data.text
     anns = data.anns
-    #script_path = os.path.dirname(os.path.abspath(__file__))
-    #project_path = '/'.join(script_path.split('/')[0:-1])
-    #ann_detail_path = os.path.join(project_path, 'NER/results/ann_detail.iob2')
+    # script_path = os.path.dirname(os.path.abspath(__file__))
+    # project_path = '/'.join(script_path.split('/')[0:-1])
+    # ann_detail_path = os.path.join(project_path, 'NER/results/ann_detail.iob2')
     IOB = ann2iob.ann_detail(text, anns)
     return render(request, 'ann_detail.html', {'data': data, 'IOB': IOB})
 
@@ -189,7 +189,7 @@ class ProjectUpdateClass(UpdateView):
     template_name = 'project_update.html'
     model = ProjectModel
     fields = ('title', 'description', 'text_file')
-    #success_url = reverse_lazy('project_detail')
+    # success_url = reverse_lazy('project_detail')
 
     def get_object(self):
         project_data = ProjectModel.objects.get(pk=self.kwargs['pk'])
@@ -218,7 +218,7 @@ class ProjectDeleteClass(PermissionRequiredMixin, DeleteView):
 class LabelCreateClass(CreateView):
     template_name = 'label_create.html'
     model = LabelModel
-    fields = ('name', 'keybind', 'color')
+    fields = ('name', 'keybind', 'color', 'user')
     # success_url = reverse_lazy('label')
 
     def get_success_url(self):
@@ -294,11 +294,11 @@ class AnnotationCreateClass(CreateView):
             f.write(splitted_line)
 
         script_path = os.path.dirname(os.path.abspath(__file__))
-        #print('script_path:: {}'.format(script_path))
+        # print('script_path:: {}'.format(script_path))
         project_path = '/'.join(script_path.split('/')[0:-1])
-        #print('project_path:: {}'.format(project_path))
+        # print('project_path:: {}'.format(project_path))
         bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
-        #print("bash_path:: {}".format(bash_path))
+        # print("bash_path:: {}".format(bash_path))
         subprocess.run(['bash', bash_path])
         n3ered_text_path = os.path.join(project_path, 'NER/results/temp.iob2')
         with open(n3ered_text_path) as f:
@@ -306,51 +306,38 @@ class AnnotationCreateClass(CreateView):
 
         indices, words_list, refs_list = n3er_parse.parse(
             n3ered_line)  # 関数テスト用
-        print(indices, words_list, refs_list)
+        words_list2, refs_list2 = n3er_parse.new_parse(n3ered_line)  # パーステスト用
+
         display_text = n3er_parse.display_text(n3ered_line)
-        label_list = LabelModel.objects.filter(projects_id=project.id)
+        #label_list = LabelModel.objects.filter(projects_id=project.id)
+        label_list = LabelModel.objects.filter(
+            user__username="root")  # アンダーバーx2でリレーションキー先参照する
+
         context['project'] = project
-        #context['text'] = n3ered_line
         context['text'] = display_text
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
-
-        context['test_list'] = ['a', 'b', 'c']
 
         refs_json = {}
         for ref in refs_list:
             refs_json[ref] = ref
         dataJSON = dumps(refs_json)
-        """
-        print('dataJSON')
-        print(dataJSON)
-        """
+
         send_data = {}
         for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
             send_data[key] = [index, word, ref]
         send_data['text'] = words_list
         sendJSON = dumps(send_data)
-        ann_data = AnnotationModel.objects.all()
 
-        anns_path = os.path.join(project_path, 'NER/data/anns/anns.txt')
-        text_path = os.path.join(project_path, 'NER/data/anns/text.txt')
-        save_path = os.path.join(project_path, 'NER/data/anns/iob.txt')
-
-        with open(anns_path, mode="w") as f:
-            for data in ann_data:
-                f.write(data.anns + "\n")
-        with open(text_path, mode="w") as f:
-            for data in ann_data:
-                f.write(data.text + "\n")
-
-        with open(anns_path) as f:
-            anns_lines = f.readlines()
-        with open(text_path) as f:
-            text_lines = f.readlines()
-        ann2iob.func(text_lines, anns_lines, save_path)
+        test_data = {}
+        test_data['words'] = words_list2
+        test_data['refs'] = refs_list2
+        testjson = dumps(test_data)
 
         context['json_data'] = dataJSON
         context['send_data'] = sendJSON
+        context['test_data'] = testjson
+
         # print(send_data)
         return context
 
@@ -379,3 +366,26 @@ class AnnotationDeleteClass(DeleteView):
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
         return result
+
+
+@login_required
+def trainview(request):
+    return render(request, 'train.html', {})
+
+
+@login_required
+def train_done_view(request):
+    ann_data = AnnotationModel.objects.all()
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    project_path = '/'.join(script_path.split('/')[0:-1])
+    train_iob_path = os.path.join(project_path, 'NER/anns/train.iob')
+    recipe_iob_path = os.path.join(project_path, 'NER/data/parsed_train.iob')
+    merged_iob_path = os.path.join(project_path, 'NER/anns/merged_train.iob')
+
+    ann2iob.file_merge(train_iob_path, recipe_iob_path, merged_iob_path)
+    ann2iob.train_parse(ann_data, train_iob_path)
+
+    train_bash_path = os.path.join(project_path, 'NER/bash/my_train.bash')
+    subprocess.run(['bash', train_bash_path])
+
+    return render(request, 'train_done.html', {})

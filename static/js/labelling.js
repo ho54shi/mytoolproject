@@ -7,7 +7,7 @@ $(function () {
     for (let i = 0; i < outer_data.length; i++) {
         allLabelData.push(outer_data[i]);
     }
-    console.log(allLabelData);
+    //console.log(allLabelData);
     let last_idx = outer_data[outer_data.length - 1][0];
     index = last_idx + 1;
     $("button.btn").on("click", getSelectedRange);
@@ -23,17 +23,20 @@ $(function () {
         var correct = $("#selectable-text")
 
 
+        console.log("start")
+        console.log(labelData);
 
         var sentence = document.getElementsByClassName("edit-table").item(0);
         prerange.setStart(sentence, 0);
-        //prerange.selectNodeContents(selection.anchorNode);
+
         prerange.setEnd(range.startContainer, range.startOffset);
         start = prerange.toString().length;
         end = start + range.toString().length;
         word = window.getSelection().toString();
-        //console.log("prerange: ", prerange.toString());
-        //console.log("range: ", range.toString());
+
+
         if (start !== end) {
+            labelData = [];
             labelData.push(index);
             index++;
             labelData.push(word);
@@ -63,28 +66,31 @@ $(function () {
             console.log("AlllabelData: ", allLabelData);
 
         }
-        labelData = [];
+
     }
     $("button.label-button").on("click", addSpanTag);
     function addSpanTag() {
-        var selection = window.getSelection();
-        var range = selection.getRangeAt(0);
+        if (labelData.length == 5) {
+            var selection = window.getSelection();
+            var range = selection.getRangeAt(0);
 
-        var span = document.createElement("span");
-        let labelName = $(this).text();
-        span.setAttribute("class", labelName);
-        span.textContent = selection.toString();
-        var data_index = index - 1;
-        var delete_button =
-            '<button class="delete btn btn-dark btn-sm" data-id=' +
-            data_index +
-            ">" +
-            '<i class="fa fa-close">' +
-            "</button>";
-        $(span).append(delete_button);
-        range.deleteContents();
-        range.insertNode(span);
-        window.getSelection().empty(); //解除
+            var span = document.createElement("span");
+            let labelName = $(this).text();
+            span.setAttribute("class", labelName);
+            span.textContent = selection.toString();
+            var data_index = index - 1;
+            var delete_button =
+                '<button class="delete btn btn-dark btn-sm" data-id=' +
+                data_index +
+                ">" +
+                '<i class="fa fa-close">' +
+                "</button>";
+            $(span).append(delete_button);
+            range.deleteContents();
+            range.insertNode(span);
+            window.getSelection().empty(); //解除
+        }
+        labelData = [];
     }
 
     $(document).on("keyup", (event) => {
@@ -94,10 +100,8 @@ $(function () {
             let tmpText = tmp.text();
             if (event.key == tmpText) {
                 var labelName = t.eq(i).prev().text();
-                //var statButton = $("input[name=group1]:eq(1)").is(":checked");
-                //if (statButton == true) {
-                //  labelName += "-question";
-                //}
+
+
                 getSelectedRange();
                 labelData.push(labelName);
                 storeData();
@@ -115,20 +119,24 @@ $(function () {
                     ">" +
                     '<i class="fa fa-close">' +
                     "</button>";
-                $(span).append(delete_button);
-                range.deleteContents();
-                range.insertNode(span);
+                if (labelData.length == 5) {
+                    $(span).append(delete_button);
+                    range.deleteContents();
+                    range.insertNode(span);
+                }
                 window.getSelection().empty(); //解除
                 window.getSelection().empty(); //解除
                 break;
             }
         }
+        labelData = [];
     });
 
     $(".text").on("click", "button.delete", function () {
         var tmp_span = $(this).parent();
         let data_index = $(this).data("id");
-        console.log("data_index: ", data_index);
+
+
         //index で検索して消去
         let target = allLabelData.find((array) => array[0] == data_index);
         allLabelData.some(function (value, index) {

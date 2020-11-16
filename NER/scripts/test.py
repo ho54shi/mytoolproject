@@ -142,7 +142,8 @@ if __name__ == "__main__":
 
         for line in open(args.text_path).readlines():
 
-            line = [c for c in line.rstrip().split("　")]  # 半角空白から全角空白に変更
+            # 半角空白から全角空白に変更=>結局半角空白へ
+            line = [c for c in line.rstrip().split(" ")]
             my_words_list += [[c for c in line]]
 
 # ----------------------------------------

@@ -13,7 +13,8 @@ class ProjectModel(models.Model):
     description = models.TextField()
     #author = models.ForeignKey(User, on_delete=models.CASCADE)
     author = models.ForeignKey(CustomeUser, on_delete=models.CASCADE)
-    text_file = models.FileField(upload_to='', validators=[FileExtensionValidator(['txt',])])
+    text_file = models.FileField(upload_to='', validators=[
+                                 FileExtensionValidator(['txt', ])])
 
     def __str__(self):
         return self.title
@@ -25,6 +26,7 @@ class LabelModel(models.Model):
     color = models.CharField(max_length=10)
     projects = models.ForeignKey(
         ProjectModel, verbose_name='プロジェクト',  on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(CustomeUser, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
