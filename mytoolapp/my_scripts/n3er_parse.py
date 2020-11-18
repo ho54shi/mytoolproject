@@ -36,7 +36,8 @@ def new_parse(n3ered_text):
     temp_words_list = []
     temp_refs_list = []
     line = [c.split('/') for c in n3ered_text.rstrip().split(' ')]
-
+    print("line:")
+    print(line)
     temp_words_list += [c[0] for c in line]
     temp_refs_list += [c[1] for c in line]
 
@@ -56,9 +57,11 @@ def new_parse(n3ered_text):
                     prev_word = word
                     prev_words += [prev_word]
                 elif(len(prev_words) > 0):  # B B と，Bが連続したエラーのとき
-                    words_list += [prev_word]
+                    words_list += ["　".join(prev_words)]
+                    prev_words = []
                     refs_list += [prev_label]
                     prev_word = word
+                    prev_words += [word]
                     prev_label = cur_label
             elif(BorI == 'I'):
                 if(len(prev_words) < 1):  # O I I B
@@ -67,10 +70,18 @@ def new_parse(n3ered_text):
                     words_list += [word]
                     refs_list += [cur_label]
                 # O B I I ...
-                elif(len(prev_words) > 0):
+                elif(len(prev_words) > 0 and prev_label == cur_label):
+                    # O Ac-B Ac-I ...
                     prev_word = word
                     prev_words += [word]
                     prev_label = cur_label
+                elif(len(prev_words) > 0 and prev_label != cur_label):
+                    # O Ac-B F-I ...
+                    words_list += ["　".join(prev_words)]
+                    prev_words = []
+                    refs_list += [prev_label]
+                    words_list += [word]
+                    refs_list += [cur_label]
 
         elif(len(prev_words) > 0):  # B O
 
@@ -83,5 +94,8 @@ def new_parse(n3ered_text):
         elif(ref == 'O'):
             words_list += [word]
             refs_list += ['O']
+
+        if(id <= 7):
+            print(prev_words)
 
     return words_list, refs_list
