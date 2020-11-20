@@ -386,6 +386,6 @@ def train_done_view(request):
     ann2iob.train_parse(ann_data, train_iob_path)
 
     train_bash_path = os.path.join(project_path, 'NER/bash/my_train.bash')
-    subprocess.run(['bash', train_bash_path])
+    subprocess.Popen(['bash', train_bash_path])
 
     return render(request, 'train_done.html', {})
