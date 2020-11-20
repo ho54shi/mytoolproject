@@ -29,7 +29,7 @@
         {% with color=item.color %}
 
         <button class="btn  label-button" style="background-color: {{item.color}}">{{item}}</button>
-        <span class="keybind shortcut-key">({{item.keybind}})</span>
+        <span class="keybind shortcut-key">{{item.keybind}}</span>
         
         {% endwith %}
     </div>
@@ -37,7 +37,7 @@
 
 </div>
 
-    
+{% comment %}
 <fieldset class="fieldset-1">
     <legend id="fieldset-1-legend">このラベルかどうか悩みましたか？
     </legend>
@@ -52,52 +52,52 @@
         <input type="radio" class="form-check-input" name="group1" id="radio-2" />
         自信がない</label>
     </div>
-</fieldset>
-    </div>
 </div>
-<div class='container'>
-    {% comment %}
-    komeout
-    <span class="text">{% for line in text %}{% if line|length > 1 %}{{ line }}<br>{% endif %}{% endfor %}</span>
-    {% endcomment %}
-    <div class='border-line'><span class="text edit-table" id="selectable-text">{{ text }}</span></div>
+</fieldset>
+{% endcomment %}
+
+<div class="container">
+
+    <div class="border-line"><span class="text edit-table" id="selectable-text">{{ text }}</span></div>
     <form action='' method="post">
         {% csrf_token %}
-        <input type='hidden' name="text" id="input-text" value="{{text}}" />
+        <input type="hidden" name="text" id="input-text" value="{{text}}" />
         <textarea class="alldata storetext" id="target" name="anns" style="display: none;"></textarea>
-        <input type='hidden' name="annotator" value="{{user.id}}" />
-        <input type='submit' class="btn btn-primary data-submit" value='submit'>
+        <input type="hidden" name="annotator" value="{{user.id}}" />
+        <input type="submit" class="btn btn-primary data-submit" value="submit">
     </form>
     <a href="javascript:history.back();" class="btn btn-dark back-to-projects">戻る</a>
 </div>
 
 <script>
-    var send_data = JSON.parse("{{send_data|escapejs}}");
-    var text = $("span.text").text();
-  
-    var splitted = text.split('　');
-  
 
-    var cnt = 0;
-    var label_cnt = 0;
+    var test_data = JSON.parse("{{test_data|escapejs}}");
+    
     var whole = document.getElementById('selectable-text');
     whole.innerHTML = "";
-    for(let w of splitted){
-        var flag = 0;
-        var label;
-        var word;
-        for(let key in send_data){
-            if(cnt == send_data[key][0]){
-                flag = 1
-                word = send_data[key][1];
-                label = send_data[key][2];
-            }    
-        }
-        if(flag){
+    var outer_data = [];
+    var start_char =0;
+    var end_char = 0;
+ 
+    let words = test_data['words'];
+    let refs = test_data['refs'];
+    var start_char = 0;
+    var end_char = 0;
+    var label_cnt = 0;
+    for(var i=0; i<words.length; i++){
+        end_char += words[i].length;
+        if(refs[i] != 'O'){
+            var labeldata = [];
+            labeldata.push(label_cnt);
+            labeldata.push(words[i]);
+            labeldata.push(start_char);
+            labeldata.push(end_char);
+            labeldata.push(refs[i]);
+
             var span = document.createElement("span");
-            let labelName = label
+            let labelName = refs[i];
             span.setAttribute("class", labelName);
-            span.textContent = word
+            span.textContent = words[i];
             var delete_button =
                 '<button class="delete btn btn-dark btn-sm" data-id=' +
                 label_cnt +
@@ -105,16 +105,17 @@
                 '<i class="fa fa-close">' +
                 "</button>";
             label_cnt++;
-            //span.appendChild(delete_button);
             span.insertAdjacentHTML('beforeend', delete_button)
             whole.insertAdjacentElement('beforeend', span);
             whole.insertAdjacentHTML('beforeend', "　");
+            outer_data.push(labeldata);
         }
         else{
-            whole.insertAdjacentHTML('beforeend', w);
+            whole.insertAdjacentHTML('beforeend', words[i]);
             whole.insertAdjacentHTML('beforeend', "　");
         }
-        cnt++;
+        end_char ++; //space
+        start_char = end_char;
     }
     
  
