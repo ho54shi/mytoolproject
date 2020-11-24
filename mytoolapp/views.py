@@ -368,13 +368,29 @@ class AnnotationDeleteClass(DeleteView):
         return result
 
 
+# test
+proc = None
+
+
 @login_required
 def trainview(request):
-    return render(request, 'train.html', {})
+    global proc
+
+    if proc is not None:
+        state = "active"
+        print("proc.poll: ", end="")
+        print(proc.poll())
+        if(proc.poll() == 0):
+            state = "deactive"
+
+    else:
+        state = "deactive"
+    return render(request, 'train.html', {"state": state})
 
 
 @login_required
 def train_done_view(request):
+    global proc
     ann_data = AnnotationModel.objects.all()
     script_path = os.path.dirname(os.path.abspath(__file__))
     project_path = '/'.join(script_path.split('/')[0:-1])
@@ -386,6 +402,6 @@ def train_done_view(request):
     ann2iob.train_parse(ann_data, train_iob_path)
 
     train_bash_path = os.path.join(project_path, 'NER/bash/my_train.bash')
-    subprocess.Popen(['bash', train_bash_path])
+    proc = subprocess.Popen(['bash', train_bash_path])
 
     return render(request, 'train_done.html', {})

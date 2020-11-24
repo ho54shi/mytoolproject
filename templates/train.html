@@ -3,7 +3,14 @@
 {% endblock header %} {% block content %}
 
 
+{{ state }}
 
+{% if state == "deactive" %}
 <a href="{% url 'train_done' %}" class="btn btn-primary"  role="button">学習開始</a>
+<a href="{% url 'projects' %}" class="btn btn-primary"  role="button">プロジェクトに戻る</a>
+{% else %}
+現在，学習中です。しばらくお待ち下さい。<br>
+<a href="{% url 'projects' %}" class="btn btn-primary"  role="button">プロジェクトに戻る</a>
+{% endif %}
 
 {% endblock content %}
