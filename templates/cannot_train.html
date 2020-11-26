@@ -1,0 +1,8 @@
+{% extends 'base.html' %} {% load static %} {% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+{% endblock header %} {% block content %}
+
+
+root権限があるユーザーのみ学習可能です。
+<a href="{% url 'projects' %}" class="btn btn-primary"  role="button">プロジェクトに戻る</a>
+{% endblock content %}

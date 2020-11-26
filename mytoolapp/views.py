@@ -375,17 +375,20 @@ proc = None
 @login_required
 def trainview(request):
     global proc
+    
+    if(request.user.is_superuser): # root 権限のみ
+        if proc is not None:
+            state = "active"
+            print("proc.poll: ", end="")
+            print(proc.poll())
+            if(proc.poll() == 0):
+                state = "deactive"
 
-    if proc is not None:
-        state = "active"
-        print("proc.poll: ", end="")
-        print(proc.poll())
-        if(proc.poll() == 0):
+        else:
             state = "deactive"
-
+        return render(request, 'train.html', {"state": state})
     else:
-        state = "deactive"
-    return render(request, 'train.html', {"state": state})
+        return render(request, 'cannot_train.html', {})
 
 
 @login_required
