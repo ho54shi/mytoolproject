@@ -5,6 +5,7 @@ from .views import annsview, anndetailview, ProjectDeleteClass, LabelDeleteClass
 from .views import AnnotationDeleteClass, ProjectUpdateClass
 from .views import trainview, train_done_view
 from .views import AnnotationExport
+from .views import sentences_create_view
 urlpatterns = [
     path('', indexview, name='index'),
     path('signup/', signupview, name='signup'),
@@ -12,6 +13,8 @@ urlpatterns = [
     path('projects/', projectsview, name='projects'),
     path('projects/<int:pk>/', projectdetailview, name='project_detail'),
     path('projects/create/', ProjectCreateClass.as_view(), name='project_create'),
+    path('projects/create/sentences_create',
+         sentences_create_view, name='sentences_create'),
     path('projects/<int:pk>/update',
          ProjectUpdateClass.as_view(), name='project_update'),
     path('projects/<int:pk>/delete/',
@@ -25,7 +28,7 @@ urlpatterns = [
     path('projects/<int:pk>/label/<int:label_pk>/delete',
          LabelDeleteClass.as_view(), name='label_delete'),
 
-    path('projects/<int:pk>/work',
+    path('projects/<int:pk>/work/<int:sentence_pk>',
          AnnotationCreateClass.as_view(), name='submit'),
     path('projects/<int:pk>/work', labellingview, name='work'),
     path('anns/', annsview, name='anns'),

@@ -94,18 +94,42 @@ def projectsview(request):
 
 @login_required
 def projectdetailview(request, pk):
-    object = ProjectModel.objects.get(pk=pk)
+    project = ProjectModel.objects.get(pk=pk)
+    # 更新するたび Sentence はクエリセットの順番はランダムになる
+    sentences = SentenceModel.objects.filter(project=project).order_by('?')
+
+    done_anns = AnnotationModel.objects.filter(
+        projects=project, annotator=request.user.id)
+
+    done_sentences_pks = []
+    for done_ann in done_anns:
+        done_sentences_pks += [done_ann.sentence.pk]
+
     chopped_lines = []
-    with open(object.text_file.path) as f:
+    with open(project.text_file.path) as f:
         for line in f.readlines():
             if len(line) > 1:
                 chopped_line = line.lstrip()
                 chopped_lines.append(chopped_line)
 
+    done_pks = []
+    for sentence in sentences:
+        for done_sentences_pk in done_sentences_pks:
+            if(sentence.pk == done_sentences_pk):
+                done_pks += [sentence.pk]
+                break
+
+    print("done_sentences_pks")
+    print(done_sentences_pks)
+    print("done_pks")
+    print(done_pks)
     content = {
-        'object': object,
+        'object': project,
         'text': chopped_lines,
-        'project_pk': pk
+        'project_pk': pk,
+        'sentences': sentences,
+        'done_sentences_pks': done_sentences_pks,
+        'done_pks': done_pks
     }
     return render(request, 'project_detail.html', content)
 
@@ -279,40 +303,59 @@ class AnnotationCreateClass(CreateView):
         tmp_pk = self.kwargs['pk']
         context['pk'] = self.kwargs['pk']
         project = ProjectModel.objects.get(pk=tmp_pk)
-        sentence_id_str = self.request.GET.get('sentence')
-        sentence_id = int(sentence_id_str)
+
+        sentence_pk = self.kwargs['sentence_pk']
+        sentence_obj = SentenceModel.objects.get(pk=sentence_pk)
 
         chopped_lines = []
-        t_lines = []
-        with open(project.text_file.path) as f:
-            for line in f.readlines():
-                t_lines.append(line)
-                if len(line) > 1:
-                    chopped_line = line.lstrip()
-                    chopped_lines.append(chopped_line)
+
         tagger = MeCab.Tagger("-Owakati")
-        words = tagger.parse(chopped_lines[sentence_id]).split()
+        words = tagger.parse(sentence_obj.text).split()
         splitted_line = " ".join(words)
         temp_file_path = "./NER/data/splitted_text.txt"
         with open(temp_file_path, mode="w") as f:
             f.write(splitted_line)
 
         script_path = os.path.dirname(os.path.abspath(__file__))
-        # print('script_path:: {}'.format(script_path))
         project_path = '/'.join(script_path.split('/')[0:-1])
-        # print('project_path:: {}'.format(project_path))
-        bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
-        # print("bash_path:: {}".format(bash_path))
-        subprocess.run(['bash', bash_path])
         n3ered_text_path = os.path.join(project_path, 'NER/results/temp.iob2')
+
+        # True: bashつかう, False: 単語分割のみ
+        n3er_flag = True
+
         with open(n3ered_text_path) as f:
             n3ered_line = f.read()
-
-        indices, words_list, refs_list = n3er_parse.parse(
-            n3ered_line)  # 関数テスト用
-        words_list2, refs_list2 = n3er_parse.new_parse(n3ered_line)  # パーステスト用
-
         display_text = n3er_parse.display_text(n3ered_line)
+        print(display_text)
+        if(n3er_flag):
+            bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
+            subprocess.run(['bash', bash_path])
+
+            indices, words_list, refs_list = n3er_parse.parse(
+                n3ered_line)  # 関数テスト用
+            words_list2, refs_list2 = n3er_parse.new_parse(
+                n3ered_line)  # パーステスト用
+
+            refs_json = {}
+            for ref in refs_list:
+                refs_json[ref] = ref
+            dataJSON = dumps(refs_json)
+
+            send_data = {}
+            for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
+                send_data[key] = [index, word, ref]
+            send_data['text'] = words_list
+            sendJSON = dumps(send_data)
+
+            test_data = {}
+            test_data['words'] = words_list2
+            test_data['refs'] = refs_list2
+            testjson = dumps(test_data)
+
+            context['json_data'] = dataJSON
+            context['send_data'] = sendJSON
+            context['test_data'] = testjson
+
         #label_list = LabelModel.objects.filter(projects_id=project.id)
         label_list = LabelModel.objects.filter(
             user__username="root")  # アンダーバーx2でリレーションキー先参照する
@@ -322,26 +365,6 @@ class AnnotationCreateClass(CreateView):
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 
-        refs_json = {}
-        for ref in refs_list:
-            refs_json[ref] = ref
-        dataJSON = dumps(refs_json)
-
-        send_data = {}
-        for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
-            send_data[key] = [index, word, ref]
-        send_data['text'] = words_list
-        sendJSON = dumps(send_data)
-
-        test_data = {}
-        test_data['words'] = words_list2
-        test_data['refs'] = refs_list2
-        testjson = dumps(test_data)
-
-        context['json_data'] = dataJSON
-        context['send_data'] = sendJSON
-        context['test_data'] = testjson
-
         # print(send_data)
         return context
 
@@ -350,7 +373,10 @@ class AnnotationCreateClass(CreateView):
 
     def form_valid(self, form):
         projects = get_object_or_404(ProjectModel, pk=self.kwargs.get('pk'))
+        sentence = get_object_or_404(
+            SentenceModel, pk=self.kwargs.get('sentence_pk'))
         form.instance.projects = projects
+        form.instance.sentence = sentence
 
         return super().form_valid(form)
 
@@ -441,14 +467,12 @@ def AnnotationExport(request):
 
 def sentences_create_view(request):
     last_project = ProjectModel.objects.last()
-    print(last_project)
     chopped_lines = []
     with open(last_project.text_file.path) as f:
         for line in f.readlines():
             if len(line) > 1:
                 chopped_line = line.rstrip()
                 chopped_lines.append(chopped_line)
-    print(chopped_lines)
 
     sentence_objects = []
     for text in chopped_lines:

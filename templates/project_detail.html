@@ -20,24 +20,27 @@
 
             <h5 class="card-title">概要：{{ object.description }}</h5>
             <h5 class="card-title">投稿者：{{ object.author }}</h5>
-            {% comment %}
-            <h5 class="card-title">テキストURL：{{ object.text_file.url }}</h5>
-            {% endcomment %}
+
             <table class="margin-test">
             <tbody>
-            <h5 class="card-title">テキスト：
-                
-                {% for line in text %}
+            <h5 class="card-title">
+                {% for sentence in sentences %}
                 <tr >
-                <td class="text-row-and-label">{{ line }}</td>
-                <td class="text-row-and-label" width="200px"><a href="{% url 'submit' object.pk %}?sentence={{forloop.counter0}}" class="btn btn-primary">ラベル付けする</a></td>
-                </tr>
+                <td class="text-row-and-label">{{ sentence }}</td>
+                <td class="text-row-and-label" width="200px"><a href="{% url 'submit' object.pk sentence.pk %}" class="btn btn-primary">ラベル付けする</a></td>
+                <td class="text-row-and-label">
+                    {% for done_pk in done_pks %}
+                    {% if done_pk == sentence.pk %}
+                        <span class="badge badge-success">Submitted!</span>
+                    {% endif %}
                 {% endfor %}
-           
+                </td>
+                </tr>
+                
+                {% endfor %}
             </h5>
             </tbody>
             </table>
-            <h5>project_pk: {{ project_pk }}</h5>
             <a href="{% url 'projects' %}" class="btn btn-secondary">戻る</a>
             <a href="{% url 'project_update' project_pk %}" class="btn btn-primary">プロジェクト編集</a>
             <a href="{% url 'label' project_pk %}" class="btn btn-primary">ラベル編集</a>
@@ -45,4 +48,5 @@
         </div>
     </div>
 </div>
+
 {% endblock content %}
