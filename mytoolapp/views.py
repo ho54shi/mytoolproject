@@ -267,7 +267,7 @@ class LabelDeleteClass(DeleteView):
 
 class AnnotationCreateClass(CreateView):
     model = AnnotationModel
-    fields = ('text', 'anns', 'annotator')
+    fields = ('text', 'anns', 'annotator', 'start_time', 'end_time')
     template_name = 'labelling.html'
 
     def get_context_data(self, **kwargs):
@@ -375,8 +375,8 @@ proc = None
 @login_required
 def trainview(request):
     global proc
-    
-    if(request.user.is_superuser): # root 権限のみ
+
+    if(request.user.is_superuser):  # root 権限のみ
         if proc is not None:
             state = "active"
             print("proc.poll: ", end="")

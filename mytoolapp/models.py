@@ -38,6 +38,8 @@ class AnnotationModel(models.Model):
     projects = models.ForeignKey(
         ProjectModel, verbose_name='プロジェクト',  on_delete=models.DO_NOTHING, null=True)
     annotator = models.ForeignKey(CustomeUser, on_delete=models.DO_NOTHING)
+    start_time = models.CharField(max_length=20)
+    end_time = models.CharField(max_length=20)
 
     def __str__(self):
         return self.text

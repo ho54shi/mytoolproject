@@ -64,6 +64,8 @@
         <input type="hidden" name="text" id="input-text" value="{{text}}" />
         <textarea class="alldata storetext" id="target" name="anns" style="display: none;"></textarea>
         <input type="hidden" name="annotator" value="{{user.id}}" />
+        <input type="hidden" name="start_time" id="start_time" value="-1" />
+        <input type="hidden" name="end_time" id="end_time" value="-1" />
         <input type="submit" class="btn btn-primary data-submit" value="submit">
     </form>
     <a href="javascript:history.back();" class="btn btn-dark back-to-projects">戻る</a>

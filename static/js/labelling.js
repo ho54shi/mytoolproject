@@ -3,7 +3,8 @@ var index = -1;
 var labelData = []
 
 $(function () {
-
+    var start_date = new Date();
+    var start_unix_time = start_date.getTime() / 1000;
     for (let i = 0; i < outer_data.length; i++) {
         allLabelData.push(outer_data[i]);
     }
@@ -162,6 +163,12 @@ $(function () {
             document.getElementById('target').value = str_all_data;
 
             console.log('str_all: ', str_all_data);
+
+            var end_date = new Date();
+            var end_unix_time = end_date.getTime() / 1000;
+
+            document.getElementById('start_time').value = start_unix_time;
+            document.getElementById('end_time').value = end_unix_time;
 
         } else {
             return false; //POST is stopped.
