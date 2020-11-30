@@ -15,6 +15,9 @@ import subprocess
 import os
 from mytoolapp.my_scripts import n3er_parse, ann2iob
 from json import dumps
+from django.http import HttpResponse
+import urllib
+import csv
 
 
 @login_required
@@ -408,3 +411,15 @@ def train_done_view(request):
     proc = subprocess.Popen(['bash', train_bash_path])
 
     return render(request, 'train_done.html', {})
+
+
+def AnnotationExport(request):
+    response = HttpResponse(content_type="text/csb; charset=utf-8")
+    filename = urllib.parse.quote((u'downloaded_anns.csv').encode("utf8"))
+    response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
+        filename)
+    writer = csv.writer(response)
+    for ann in AnnotationModel.objects.all():
+        writer.writerow([ann.pk, ann.text, ann.anns, ann.projects,
+                         ann.annotator, ann.start_time, ann.end_time])
+    return response
