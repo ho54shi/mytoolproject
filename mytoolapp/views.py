@@ -414,12 +414,25 @@ def train_done_view(request):
 
 
 def AnnotationExport(request):
-    response = HttpResponse(content_type="text/csb; charset=utf-8")
-    filename = urllib.parse.quote((u'downloaded_anns.csv').encode("utf8"))
+    content = ""
+    rows = []
+    for ann in AnnotationModel.objects.all():
+        cols = []
+        cols += [str(ann.pk)]
+        cols += [ann.text]
+        cols += [ann.anns]
+        cols += [str(ann.projects.pk)]
+        cols += [ann.projects.title]
+        cols += [str(ann.annotator.pk)]
+        cols += [ann.annotator.username]
+        cols += [str(ann.start_time)]
+        cols += [str(ann.end_time)]
+        rows += [";".join(cols)]
+
+    content = "\n".join(rows)
+    response = HttpResponse(content, content_type="text/text; charset=utf-8")
+    filename = urllib.parse.quote((u'downloaded_anns.text').encode("utf8"))
     response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
         filename)
-    writer = csv.writer(response)
-    for ann in AnnotationModel.objects.all():
-        writer.writerow([ann.pk, ann.text, ann.anns, ann.projects,
-                         ann.annotator, ann.start_time, ann.end_time])
+
     return response
