@@ -10,6 +10,7 @@
   aria-pressed="true"
   >プロジェクト</a
 >
+{% if user.is_superuser %}
 <a
   href="{% url 'ann_export' %}"
   class="btn btn-primary"
@@ -17,6 +18,8 @@
   aria-pressed="true"
   >エクスポート</a
 >
+{% endif %}
+
 <a
   href="{% url 'logout' %}"
   class="btn btn-dark"
