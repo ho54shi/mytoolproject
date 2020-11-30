@@ -162,7 +162,13 @@ $(function () {
             }
             document.getElementById('target').value = str_all_data;
 
-            console.log('str_all: ', str_all_data);
+            if (str_all_data.length < 1) {
+                console.log("length");
+                console.log(str_all_data.length)
+                str_all_data = 'ALL_Os'
+                document.getElementById('target').value = str_all_data;
+            }
+            console.log('str_all_data: ', str_all_data);
 
             var end_date = new Date();
             var end_unix_time = end_date.getTime() / 1000;

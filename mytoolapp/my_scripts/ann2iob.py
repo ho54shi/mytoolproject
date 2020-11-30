@@ -21,8 +21,16 @@ def ann_detail(text, anns):
     IOBs = []
 
     text = text.rstrip("\n")
-    anns = anns.rstrip("\n")
     words = text.split('　')
+    anns = anns.rstrip("\n")
+    if(anns == "ALL_Os"):
+        IOBs = []
+        for word in words:
+            iob = word + "/O"
+            IOBs += [iob]
+
+        return " ".join(IOBs)
+
     refs = anns.split('\t')
     list_refs = []
     for ref in refs:
