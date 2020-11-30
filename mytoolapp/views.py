@@ -6,7 +6,7 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser
+from .models import ProjectModel, LabelModel, AnnotationModel, CustomeUser, SentenceModel
 from django.core.paginator import Paginator
 from rules.contrib.views import PermissionRequiredMixin
 from config.settings import BASE_DIR
@@ -172,7 +172,8 @@ class ProjectCreateClass(CreateView):
     template_name = 'projectcreate.html'
     model = ProjectModel
     fields = ('title', 'description', 'author', 'text_file')
-    success_url = reverse_lazy('projects')
+    #success_url = reverse_lazy('projects')
+    success_url = reverse_lazy('sentences_create')
 
 
 """
@@ -436,3 +437,23 @@ def AnnotationExport(request):
         filename)
 
     return response
+
+
+def sentences_create_view(request):
+    last_project = ProjectModel.objects.last()
+    print(last_project)
+    chopped_lines = []
+    with open(last_project.text_file.path) as f:
+        for line in f.readlines():
+            if len(line) > 1:
+                chopped_line = line.rstrip()
+                chopped_lines.append(chopped_line)
+    print(chopped_lines)
+
+    sentence_objects = []
+    for text in chopped_lines:
+        sentence_objects.append(SentenceModel(text=text, project=last_project))
+    # sentence_objects のデータをDBに一括登録する
+    SentenceModel.objects.bulk_create(sentence_objects)
+
+    return redirect('projects')

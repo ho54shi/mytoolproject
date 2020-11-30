@@ -20,6 +20,15 @@ class ProjectModel(models.Model):
         return self.title
 
 
+class SentenceModel(models.Model):
+    project = models.ForeignKey(
+        ProjectModel, verbose_name='プロジェクト',  on_delete=models.DO_NOTHING, null=True)
+    text = models.TextField()
+
+    def __str__(self):
+        return self.text
+
+
 class LabelModel(models.Model):
     name = models.CharField(max_length=50)
     keybind = models.CharField(max_length=1)
@@ -40,6 +49,8 @@ class AnnotationModel(models.Model):
     annotator = models.ForeignKey(CustomeUser, on_delete=models.DO_NOTHING)
     start_time = models.CharField(max_length=20)
     end_time = models.CharField(max_length=20)
+
+    sentence = models.ForeignKey(SentenceModel, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.text
