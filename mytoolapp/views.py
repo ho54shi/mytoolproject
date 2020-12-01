@@ -431,8 +431,8 @@ def train_done_view(request):
     recipe_iob_path = os.path.join(project_path, 'NER/data/parsed_train.iob')
     merged_iob_path = os.path.join(project_path, 'NER/anns/merged_train.iob')
 
-    ann2iob.file_merge(train_iob_path, recipe_iob_path, merged_iob_path)
     ann2iob.train_parse(ann_data, train_iob_path)
+    ann2iob.file_merge(train_iob_path, recipe_iob_path, merged_iob_path)
 
     train_bash_path = os.path.join(project_path, 'NER/bash/my_train.bash')
     proc = subprocess.Popen(['bash', train_bash_path])
