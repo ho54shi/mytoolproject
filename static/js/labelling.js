@@ -5,12 +5,17 @@ var labelData = []
 $(function () {
     var start_date = new Date();
     var start_unix_time = start_date.getTime() / 1000;
-    for (let i = 0; i < outer_data.length; i++) {
-        allLabelData.push(outer_data[i]);
+    if (outer_data.length > 0) {
+        for (let i = 0; i < outer_data.length; i++) {
+            allLabelData.push(outer_data[i]);
+        }
+
+        let last_idx = outer_data[outer_data.length - 1][0];
+        index = last_idx + 1;
     }
-    //console.log(allLabelData);
-    let last_idx = outer_data[outer_data.length - 1][0];
-    index = last_idx + 1;
+    else {
+        index = 0;
+    }
     $("button.btn").on("click", getSelectedRange);
     $("button.btn").on("click", getButtonName);
     $("button.label-button").on("click", storeData);

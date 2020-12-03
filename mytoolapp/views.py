@@ -327,7 +327,7 @@ class AnnotationCreateClass(CreateView):
         n3ered_text_path = os.path.join(project_path, 'NER/results/temp.iob2')
 
         # True: bashつかう, False: 単語分割のみ
-        n3er_flag = True
+        n3er_flag = False
 
  
 
@@ -338,36 +338,24 @@ class AnnotationCreateClass(CreateView):
                 n3ered_line = f.read()
             display_text = n3er_parse.display_text(n3ered_line)
             
-
             indices, words_list, refs_list = n3er_parse.parse(
                 n3ered_line)  # 関数テスト用
             words_list2, refs_list2 = n3er_parse.new_parse(
                 n3ered_line)  # パーステスト用
 
-            refs_json = {}
-            for ref in refs_list:
-                refs_json[ref] = ref
-            dataJSON = dumps(refs_json)
-
-            send_data = {}
-            for key, (index, word, ref) in enumerate(zip(indices, words_list, refs_list)):
-                send_data[key] = [index, word, ref]
-            send_data['text'] = words_list
-            sendJSON = dumps(send_data)
 
             test_data = {}
             test_data['words'] = words_list2
             test_data['refs'] = refs_list2
             testjson = dumps(test_data)
 
-            context['json_data'] = dataJSON
-            context['send_data'] = sendJSON
             context['test_data'] = testjson
         else:
-            display_text = splitted_line
+            print("Splited: {}".format(splitted_line))
+            display_text = "　".join(words)
             test_data = {}
-            test_data['words'] = []
-            test_data['refs'] = []
+            test_data['words'] = words
+            test_data['refs'] = ["O" for _ in range(len(words))]
             context['test_data'] = dumps(test_data)
 
         #label_list = LabelModel.objects.filter(projects_id=project.id)
