@@ -309,8 +309,14 @@ class AnnotationCreateClass(CreateView):
 
         chopped_lines = []
 
+        # モデル読み込みに時間がかかりすぎる
+        # with open("./NER/data/raw.txt", mode="w") as f:
+        #    f.write(sentence_obj.text + "\n")
+        #subprocess.run(['bash', "./NER/bash/kytea_bash.bash"])
+
         tagger = MeCab.Tagger("-Owakati")
         words = tagger.parse(sentence_obj.text).split()
+
         splitted_line = " ".join(words)
         temp_file_path = "./NER/data/splitted_text.txt"
         with open(temp_file_path, mode="w") as f:
@@ -323,13 +329,15 @@ class AnnotationCreateClass(CreateView):
         # True: bashつかう, False: 単語分割のみ
         n3er_flag = True
 
-        with open(n3ered_text_path) as f:
-            n3ered_line = f.read()
-        display_text = n3er_parse.display_text(n3ered_line)
-        print(display_text)
+ 
+
         if(n3er_flag):
             bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
             subprocess.run(['bash', bash_path])
+            with open(n3ered_text_path) as f:
+                n3ered_line = f.read()
+            display_text = n3er_parse.display_text(n3ered_line)
+            
 
             indices, words_list, refs_list = n3er_parse.parse(
                 n3ered_line)  # 関数テスト用
@@ -355,6 +363,12 @@ class AnnotationCreateClass(CreateView):
             context['json_data'] = dataJSON
             context['send_data'] = sendJSON
             context['test_data'] = testjson
+        else:
+            display_text = splitted_line
+            test_data = {}
+            test_data['words'] = []
+            test_data['refs'] = []
+            context['test_data'] = dumps(test_data)
 
         #label_list = LabelModel.objects.filter(projects_id=project.id)
         label_list = LabelModel.objects.filter(
@@ -365,7 +379,6 @@ class AnnotationCreateClass(CreateView):
         context['label_list'] = label_list
         context['project_pk'] = tmp_pk
 
-        # print(send_data)
         return context
 
     def get_success_url(self):
