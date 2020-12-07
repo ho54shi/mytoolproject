@@ -18,6 +18,7 @@ from json import dumps
 from django.http import HttpResponse
 import urllib
 import csv
+import random
 
 
 @login_required
@@ -78,13 +79,13 @@ def projectsview(request):
 
     if all_flag == "true":
         all_project_list = ProjectModel.objects.all()
-        paginator = Paginator(all_project_list, 3)  # 10 :item per a page
+        paginator = Paginator(all_project_list, 3)  # 3 :item per a page
         p = request.GET.get('p')
         print('p:', p)
         project_list = paginator.get_page(p)
     else:
         my_project_list = ProjectModel.objects.filter(author_id=user_id)
-        paginator = Paginator(my_project_list, 3)  # 10 :item per a page
+        paginator = Paginator(my_project_list, 3)  # 3 :item per a page
         p = request.GET.get('p')
         project_list = paginator.get_page(p)
     context = {'project_list': project_list,
@@ -95,8 +96,14 @@ def projectsview(request):
 @login_required
 def projectdetailview(request, pk):
     project = ProjectModel.objects.get(pk=pk)
+
     # 更新するたび Sentence はクエリセットの順番はランダムになる
-    sentences = SentenceModel.objects.filter(project=project).order_by('?')
+    #sentences = SentenceModel.objects.filter(project=project).order_by('?')
+
+    sentences = SentenceModel.objects.filter(
+        project_id=project.pk)  # <---あってるか？
+
+    # -----------------------------------------------------------------
 
     done_anns = AnnotationModel.objects.filter(
         projects=project, annotator=request.user.id)
@@ -119,10 +126,6 @@ def projectdetailview(request, pk):
                 done_pks += [sentence.pk]
                 break
 
-    print("done_sentences_pks")
-    print(done_sentences_pks)
-    print("done_pks")
-    print(done_pks)
     content = {
         'object': project,
         'text': chopped_lines,
@@ -309,15 +312,14 @@ class AnnotationCreateClass(CreateView):
 
         chopped_lines = []
 
-        # モデル読み込みに時間がかかりすぎる
-        # with open("./NER/data/raw.txt", mode="w") as f:
-        #    f.write(sentence_obj.text + "\n")
-        #subprocess.run(['bash', "./NER/bash/kytea_bash.bash"])
+        #tagger = MeCab.Tagger("-Owakati")
+        #words = tagger.parse(sentence_obj.text).split()
 
-        tagger = MeCab.Tagger("-Owakati")
-        words = tagger.parse(sentence_obj.text).split()
+        #splitted_line = " ".join(words)
 
-        splitted_line = " ".join(words)
+        splitted_line = sentence_obj.text
+        words = sentence_obj.text.split()
+
         temp_file_path = "./NER/data/splitted_text.txt"
         with open(temp_file_path, mode="w") as f:
             f.write(splitted_line)
@@ -328,8 +330,8 @@ class AnnotationCreateClass(CreateView):
 
         # True: bashつかう, False: 単語分割のみ
         n3er_flag = False
-
- 
+        if sentence_obj.support:
+            n3er_flag = True
 
         if(n3er_flag):
             bash_path = os.path.join(project_path, 'NER/bash/my_test.bash')
@@ -337,12 +339,11 @@ class AnnotationCreateClass(CreateView):
             with open(n3ered_text_path) as f:
                 n3ered_line = f.read()
             display_text = n3er_parse.display_text(n3ered_line)
-            
+
             indices, words_list, refs_list = n3er_parse.parse(
                 n3ered_line)  # 関数テスト用
             words_list2, refs_list2 = n3er_parse.new_parse(
                 n3ered_line)  # パーステスト用
-
 
             test_data = {}
             test_data['words'] = words_list2
@@ -351,7 +352,6 @@ class AnnotationCreateClass(CreateView):
 
             context['test_data'] = testjson
         else:
-            print("Splited: {}".format(splitted_line))
             display_text = "　".join(words)
             test_data = {}
             test_data['words'] = words
@@ -469,15 +469,37 @@ def AnnotationExport(request):
 def sentences_create_view(request):
     last_project = ProjectModel.objects.last()
     chopped_lines = []
+    idx_list = []
+    idx = 0
     with open(last_project.text_file.path) as f:
         for line in f.readlines():
             if len(line) > 1:
                 chopped_line = line.rstrip()
                 chopped_lines.append(chopped_line)
+                idx_list.append(idx)
+                idx += 1
+
+    half_num = int(len(chopped_lines) / 2)
+    print("half_num: {}".format(half_num))
+
+    support_list = random.sample(idx_list, half_num)
+    non_support_list = []
+    for idx in idx_list:
+        if idx in support_list:
+            continue
+        else:
+            non_support_list += [idx]
+
+    support_list.sort()
+    non_support_list.sort()
 
     sentence_objects = []
-    for text in chopped_lines:
-        sentence_objects.append(SentenceModel(text=text, project=last_project))
+    for idx, text in zip(idx_list, chopped_lines):
+        support = True
+        if idx in non_support_list:
+            support = False
+        sentence_objects.append(SentenceModel(
+            text=text, project=last_project, support=support))
     # sentence_objects のデータをDBに一括登録する
     SentenceModel.objects.bulk_create(sentence_objects)
 
