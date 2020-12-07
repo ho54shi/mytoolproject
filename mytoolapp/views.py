@@ -101,7 +101,7 @@ def projectdetailview(request, pk):
     #sentences = SentenceModel.objects.filter(project=project).order_by('?')
 
     sentences = SentenceModel.objects.filter(
-        project_id=project.pk)  # <---あってるか？
+        project_id=project.pk)
 
     # -----------------------------------------------------------------
 
@@ -125,14 +125,17 @@ def projectdetailview(request, pk):
             if(sentence.pk == done_sentences_pk):
                 done_pks += [sentence.pk]
                 break
-
+    print("all:{}".format(len(sentences)))
+    print("done:{}".format(len(done_pks)))
     content = {
         'object': project,
         'text': chopped_lines,
         'project_pk': pk,
         'sentences': sentences,
         'done_sentences_pks': done_sentences_pks,
-        'done_pks': done_pks
+        'done_pks': done_pks,
+        'whole_num': len(sentences),
+        'done_num': len(done_pks)
     }
     return render(request, 'project_detail.html', content)
 
