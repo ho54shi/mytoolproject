@@ -458,9 +458,11 @@ def AnnotationExport(request):
         cols += [ann.annotator.username]
         cols += [str(ann.start_time)]
         cols += [str(ann.end_time)]
+        cols += [str(ann.sentence.support)]
         rows += [";".join(cols)]
 
     content = "\n".join(rows)
+    content += '\n'
     response = HttpResponse(content, content_type="text/text; charset=utf-8")
     filename = urllib.parse.quote((u'downloaded_anns.txt').encode("utf8"))
     response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(
