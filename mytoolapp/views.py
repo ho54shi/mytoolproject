@@ -96,14 +96,8 @@ def projectsview(request):
 @login_required
 def projectdetailview(request, pk):
     project = ProjectModel.objects.get(pk=pk)
-
-    # 更新するたび Sentence はクエリセットの順番はランダムになる
-    #sentences = SentenceModel.objects.filter(project=project).order_by('?')
-
     sentences = SentenceModel.objects.filter(
         project_id=project.pk)
-
-    # -----------------------------------------------------------------
 
     done_anns = AnnotationModel.objects.filter(
         projects=project, annotator=request.user.id)
@@ -125,13 +119,28 @@ def projectdetailview(request, pk):
             if(sentence.pk == done_sentences_pk):
                 done_pks += [sentence.pk]
                 break
-    print("all:{}".format(len(sentences)))
-    print("done:{}".format(len(done_pks)))
+    print("done_pks ", end="")
+    print(done_pks)
+    s_done = []
+    s_undone = []
+    for s in sentences:
+        if s.pk in done_pks:
+            s_done += [s]
+        else:
+            s_undone += [s]
+
+    sentences2 = []
+    for s in s_undone:
+        sentences2 += [s]
+    for s in s_done:
+        sentences2 += [s]
+
     content = {
         'object': project,
         'text': chopped_lines,
         'project_pk': pk,
-        'sentences': sentences,
+        # 'sentences': sentences,
+        'sentences': sentences2,
         'done_sentences_pks': done_sentences_pks,
         'done_pks': done_pks,
         'whole_num': len(sentences),
@@ -202,7 +211,7 @@ class ProjectCreateClass(CreateView):
     template_name = 'projectcreate.html'
     model = ProjectModel
     fields = ('title', 'description', 'author', 'text_file')
-    #success_url = reverse_lazy('projects')
+    # success_url = reverse_lazy('projects')
     success_url = reverse_lazy('sentences_create')
 
 
@@ -315,10 +324,10 @@ class AnnotationCreateClass(CreateView):
 
         chopped_lines = []
 
-        #tagger = MeCab.Tagger("-Owakati")
-        #words = tagger.parse(sentence_obj.text).split()
+        # tagger = MeCab.Tagger("-Owakati")
+        # words = tagger.parse(sentence_obj.text).split()
 
-        #splitted_line = " ".join(words)
+        # splitted_line = " ".join(words)
 
         splitted_line = sentence_obj.text
         words = sentence_obj.text.split()
@@ -361,7 +370,7 @@ class AnnotationCreateClass(CreateView):
             test_data['refs'] = ["O" for _ in range(len(words))]
             context['test_data'] = dumps(test_data)
 
-        #label_list = LabelModel.objects.filter(projects_id=project.id)
+        # label_list = LabelModel.objects.filter(projects_id=project.id)
         label_list = LabelModel.objects.filter(
             user__username="root")  # アンダーバーx2でリレーションキー先参照する
 
@@ -458,6 +467,7 @@ def AnnotationExport(request):
         cols += [ann.annotator.username]
         cols += [str(ann.start_time)]
         cols += [str(ann.end_time)]
+        cols += [str(ann.sentence.id)]
         cols += [str(ann.sentence.support)]
         rows += [";".join(cols)]
 
